@@ -55,11 +55,4 @@ print([cd '/AnalysisFigures/' tag '_Hcompare.png'],'-dpng')
 
 %% 2 - calculate from one tag on another deployment
 % tt13_278a is Lono
-% tt13_281a is also Lono, f = 12 
-
-% load in f = 12 allstore
-f = 12; 
-filename = strcat(DQ{f,2},'_resp');
-f12 = load([cd '\PneumoData\' filename '_flowsound.mat']); 
-
-CrossValsubroutine
+% tt13_281a is also Lono

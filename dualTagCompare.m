@@ -5,8 +5,8 @@
 % load DQ files
 load('DQFiles2017')
 
-f = [9 28];
-% f = [10 11];
+%f = [9 28];
+f = [10 11];
 
 % load in data for both files 
 tag1 = load([cd '\PneumoData\' DQ2017{f(1),2} '_resp_flowsound.mat']);
@@ -109,7 +109,7 @@ print([cd '\AnalysisFigures\' DQ2017{f(1),1} 'dualtag_between_FlowSound'], '-dsv
 
 
 %% plot error against each other? 
-% within tags, between tags 
+% within tags 
 figure(23), clf, hold on 
 % set(gcf,'position',1000*[2.0637    0.0990    1.1680    0.4280])
 set(gcf,'paperpositionmode','auto')
