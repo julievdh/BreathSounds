@@ -1,6 +1,6 @@
 % tag119 check hydrophones
 
-tags = {'tt17_152b'; 'tt17_152z'; 'tt17_136b'; 'tt13_278a'};
+tags = {'tt17_149d'; 'tt17_149z'; 'tt17_136b'; 'tt13_278a'};
 % D119, D421, D401 in 2017, D401 in 2013
 
 for j = 1:length(tags)
@@ -23,8 +23,6 @@ for j = 1:length(tags)
         % remove zero offset
         s(:,1) = s(:,1)-mean(s(:,1));
         s(:,2) = s(:,2)-mean(s(:,2));
-        s = resample(s,1,4); % downsample
-        fs = fs/4;    % reduce sampling rate
         
         % % plot if interested
         % figure(1)
@@ -33,10 +31,18 @@ for j = 1:length(tags)
         % subplot(212)
         % spectrogram(s(:,2),512,500,4096,fs,'yaxis'); colorbar off; ylim([0 20])
         
-        % calculate Clip level on tag 2 based on difference
-        CL2(j,i) = 20*log10(sqrt(mean(s(:,1).^2))) - 20*log10(sqrt(mean(s(:,2).^2))) + 184;
+        % difference in levels on two hydrophones
+        % RMS amplitude
+        CL2(j,i) = 20*log10(sqrt(mean(s(:,2).^2))) - 20*log10(sqrt(mean(s(:,1).^2)));
+        % peak to peak
+        p2p(j,i) = 20*log10(max(s(:,2))-min(s(:,2))) - 20*log10(max(s(:,1))-min(s(:,1)));
+   
     end
 end
 
-mean(CL2')
+median(CL2')
+median(p2p')
 
+figure(82), clf, hold on 
+plot(CL2'), legend(tags)
+plot(p2p','--')
