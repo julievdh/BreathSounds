@@ -121,7 +121,8 @@ end
 
 %% %% %% spectrogram all breaths
 figure(4), clf
-set(gcf,'position',1000*[2.9783   -0.3117    0.5607    0.9520])
+set(gcf,'position',1000*[2.9783   -0.3117    0.5607    0.9520],...
+    'paperpositionmode','auto')
 ha = tight_subplot(15,5,[.03 .03],[.08 .01],[.1 .01]);
 
 for k = 1:length(sigstore(f).o)
@@ -139,23 +140,26 @@ set(h2,'position',[-0.02 0.5 0])
 set(h1,'position',[0.5 0 0])
 adjustfigurefont
 
+print([cd '\AnalysisFigures\Syringe_147z_assay_out'],'-dpng','-r300')
+
 %%
-% figure(5), clf
-% for k = 1:length(sigstore_o)
-%     subplot(15,5,k), hold on
-%     [SL_o(:,k),f] = speclev(sigstore_o{1,k},2048,afs);
-%     plot(SL_o(:,k),f)
-%     axis([-150 -60 0 5E3])
-% %     lth = 2000; hth = 4000;
-% %     SLhigh_o(k) = mean(SL_o(f>lth & f <hth,k));
-% %     SLlow_o(k) = mean(SL_o(f<lth,k));
-% %     plot([SLhigh_o(k) SLlow_o(k)],[hth lth],'o-')
-% end
+figure(5), clf
+for k = 1:length(sigstore(f).o)
+    subplot(15,5,k), hold on
+    [SL_o(:,k),F] = speclev(sigstore(f).o{1,k},2048,afs);
+    plot(SL_o(:,k),F)
+    axis([-150 -60 0 5E3])
+%     lth = 2000; hth = 4000;
+%     SLhigh_o(k) = mean(SL_o(f>lth & f <hth,k));
+%     SLlow_o(k) = mean(SL_o(f<lth,k));
+%     plot([SLhigh_o(k) SLlow_o(k)],[hth lth],'o-')
+end
 
 %% for inhales
 %% spectrogram all breaths
 figure(6), clf
-set(gcf,'position',1000*[2.9783   -0.3117    0.5607    0.9520])
+set(gcf,'position',1000*[2.9783   -0.3117    0.5607    0.9520],...
+    'paperpositionmode','auto')
 ha = tight_subplot(15,5,[.03 .03],[.08 .01],[.1 .01]);
 
 for k = 1:length(sigstore(f).i)
@@ -173,18 +177,20 @@ set(h2,'position',[-0.02 0.5 0])
 set(h1,'position',[0.5 0 0])
 adjustfigurefont
 
+print([cd '\AnalysisFigures\Syringe_147z_assay_in'],'-dpng','-r300')
+
 %%
-% figure(7), clf
-% for k = 1:length(sigstore_o)
-%     subplot(15,5,k), hold on
-%     [SL_i(:,k),F] = speclev(sigstore_i{1,k},2048,afs);
-%     plot(SL_i(:,k),f)
-%     axis([-150 -60 0 5E3])
-%     %lth = 2000; hth = 4000;
-%     %SLhigh_i(k) = mean(SL_i(F>lth & F <hth,k));
-%     %SLlow_i(k) = mean(SL_i(F<lth,k));
-%     %plot([SLhigh_i(k) SLlow_i(k)],[hth lth],'o-')
-% end
+figure(7), clf
+for k = 1:length(sigstore(f).i)
+    subplot(15,5,k), hold on
+    [SL_i(:,k),F] = speclev(sigstore(f).i{1,k},2048,afs);
+    plot(SL_i(:,k),F)
+    axis([-150 -60 0 5E3])
+    %lth = 2000; hth = 4000;
+    %SLhigh_i(k) = mean(SL_i(F>lth & F <hth,k));
+    %SLlow_i(k) = mean(SL_i(F<lth,k));
+    %plot([SLhigh_i(k) SLlow_i(k)],[hth lth],'o-')
+end
 
 %% Always 7L Volume
 
@@ -199,6 +205,7 @@ for bl = 1:nblock
         % find max flow rate during that time
         mxflow{bl}(i) = max(FilteredFlow{bl}(st{bl}(i):ed{bl}(i)));
         minflow{bl}(i) = min(FilteredFlow{bl}(st{bl}(i):ed{bl}(i)));
+        
         
         cuts(pon3(ct)).flow = FilteredFlow{bl}(st{bl}(i):ed{bl}(i));
         cuts(pon3(ct)).vol = vol; 
@@ -268,7 +275,8 @@ figure(13); clf, hold on
 subplot(121), hold on
 plot(SLlow_o(pon3),[minflow{:}],'o')
 plot(SLhigh_o(pon3),[minflow{:}],'o')
-xlabel('SLlow and SLhigh'), ylabel('Max Syringe Out Flow (L/s)')
+xlabel('SL'), ylabel('Max Syringe Out Flow (L/s)')
+legend('0-1000 Hz','2500-3500 Hz','location','southwest')
 subplot(122)
 plot(SLdiff_o(pon3),[minflow{:}],'o')
 xlabel('SLlow-SLhigh')
@@ -310,16 +318,21 @@ set(gca,'view',[13.8667   57.4667])
 print('Syringe-147z-pneumon-PSD.png','-dpng')
 
 
-return
 %% do linear model
 % some variables in table
 tbl = table(Sint1(f).out', SLlow_o',SLhigh_o',SLdiff_o',dist3',flow',pneum,...
     'VariableNames',{'Sint','SLlow','SLhigh','SLdiff','Distance','Flow','Pneumo'});
 % fit a linear model: is the source level affected by distance or
 % pneumotach?
-lm = fitlm(tbl,'SLlow~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
-lm = fitlm(tbl,'SLhigh~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
-lm = fitlm(tbl,'SLdiff~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}); plotSlice(lm)
+lmLF = fitlm(tbl,'SLlow~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
+figure(32), clf
+co = [0 93 154]/255;
+SyringeSpecLMfig(lmLF,co)
+lmHF = fitlm(tbl,'SLhigh~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
+co = [25 164 255]/255;
+SyringeSpecLMfig(lmHF,co)
+print([cd '\AnalysisFigures\Syringe_147z_LMout'],'-dpng','-r300')
+% lm = fitlm(tbl,'SLdiff~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}); plotSlice(lm)
 
 lm = fitlm(tbl,'Sint~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}); plotSlice(lm)
 
@@ -327,11 +340,21 @@ tbl = table(Sint1(f).in', SLlow_i',SLhigh_i',SLdiff_i',dist3',flow',pneum,...
     'VariableNames',{'Sint','SLlow','SLhigh','SLdiff','Distance','Flow','Pneumo'});
 % fit a linear model: is the source level affected by distance or
 % pneumotach?
-lm = fitlm(tbl,'SLlow~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
-lm = fitlm(tbl,'SLhigh~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
-lm = fitlm(tbl,'SLdiff~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}); plotSlice(lm)
+figure(33), clf, 
+lmLF = fitlm(tbl,'SLlow~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
+co = [201 82 11]/255;
+SyringeSpecLMfig(lmLF,co)
+lmHF = fitlm(tbl,'SLhigh~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
+co = [255 129 54]/255;
+SyringeSpecLMfig(lmHF,co) 
+
+print([cd '\AnalysisFigures\Syringe_147z_LMin'],'-dpng','-r300')
+    
+%lm = fitlm(tbl,'SLdiff~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}); plotSlice(lm)
 % how is sound integral affected by pneumotach?
 lm = fitlm(tbl,'Sint~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
+
+return 
 
 %% next: volume or flow relationship to SL or Sint
 tbl_o = table([minflow{:}]',Sint1(f).out(pon3)',SLlow_o(pon3)',SLhigh_o(pon3)',SLdiff_o(pon3)',dist3(pon3)',...
@@ -343,5 +366,3 @@ tbl_i = table([mxflow{:}]',Sint1(f).in(pon3)',SLlow_i(pon3)',SLhigh_i(pon3)',SLd
     'VariableNames',{'MinFlow','Sint','SLlow','SLhigh','SLdiff','Distance'});
 % fit a linear model: can SLlow-high-diff be used to indicate flow?
 lm = fitlm(tbl_i,'MinFlow~SLhigh+SLdiff+Distance'), plotSlice(lm)
-
-%%

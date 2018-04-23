@@ -20,7 +20,7 @@ end
 
 figure(10)
 mesh(lowc,highc,RES)
-xlabel('Low compon3ent, Hz'), ylabel('High compon3ent, Hz'), zlabel('R^2')
+xlabel('Low component, Hz'), ylabel('High component, Hz'), zlabel('R^2')
 
 [m,ind] = max(max(RES));
 bestlow = lowc(ind);
@@ -39,4 +39,3 @@ for k = 1:size(SL_o,2)
 end
 
 SLdiff_o = SLlow_o - SLhigh_o;
-
