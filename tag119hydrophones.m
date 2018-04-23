@@ -1,6 +1,6 @@
 % tag119 check hydrophones
 
-tags = {'tt17_149d'; 'tt17_149z'; 'tt17_136b'; 'tt13_278a'};
+tags = {'tt17_152b'; 'tt17_152z'; 'tt17_149d'; 'tt17_149z'; 'tt17_136b'; 'tt13_278a'};
 % D119, D421, D401 in 2017, D401 in 2013
 
 for j = 1:length(tags)
@@ -41,7 +41,7 @@ for j = 1:length(tags)
 end
 
 median(CL2')
-median(p2p')
+% median(p2p')
 
 figure(82), clf, hold on 
 plot(CL2'), legend(tags)
