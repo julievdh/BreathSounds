@@ -317,6 +317,10 @@ cd '\\uni.au.dk\Users\au575532\Documents\MATLAB\BreathSounds\AnalysisFigures'
 set(gca,'view',[13.8667   57.4667])
 print('Syringe-147z-pneumon-PSD.png','-dpng')
 
+% get average flow rates for each *flow level*
+for i = 1:5 
+flows(i,:) = [mean(allminflow(i:5:end)) std(allminflow(i:5:end)) mean(allmxflow(i:5:end)) std(allmxflow(i:5:end))];
+end
 
 %% do linear model
 % some variables in table
@@ -353,6 +357,9 @@ print([cd '\AnalysisFigures\Syringe_147z_LMin'],'-dpng','-r300')
 %lm = fitlm(tbl,'SLdiff~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}); plotSlice(lm)
 % how is sound integral affected by pneumotach?
 lm = fitlm(tbl,'Sint~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
+
+
+
 
 return 
 
