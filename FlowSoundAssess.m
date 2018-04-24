@@ -231,9 +231,11 @@ savefig([cd '\AnalysisFigures\' tag '_VTmeas-est'])
 
 
 %% error figure
+for i = 1:length(cuts)
+    mxEflow(:,i) = max(cuts(i).flow(:,2));
+    mxIflow(:,i) = min(cuts(i).flow(:,2)); 
+end
 
-mxEflow = all_SUMMARYDATA(CUE_S,3); % inhaled
-mxIflow = all_SUMMARYDATA(CUE_S,4); % exhaled 
 
 VTerre = VTest - repmat(VTe,2,1);
 VTerri = VTesti - repmat(VTi,2,1);
@@ -307,12 +309,15 @@ nanmean(nanmean(VTi(VTesti > 0) - VTesti(VTesti > 0))./VTe(VTesti > 0))
 
 
 %% plot spectral information and flow rate
-expFR = abs(all_SUMMARYDATA(CUE_S,4))';
+F = 0:117.1875:1.1989E5; % frequencies for SL calculations
+expFR = abs(all_SUMMARYDATA(CUE_S,4))'; % THESE ARENT RIGHT FOR DQ 2013
 insFR = all_SUMMARYDATA(CUE_S,3)';
 figure(88), clf, hold on
 for i = 1:length(allstore)
     if isempty(allstore(i).SL_e) == 0
         plot3(repmat(expFR(i),1,171),F(1:171),allstore(i).SL_e(1:171))
+   allstore(i).SL_e_high = mean(allstore(i).SL_e(F<3500 & F > 2500));
+   allstore(i).SL_e_low = mean(allstore(i).SL_e(F<1000));
     end
 end
 
@@ -320,6 +325,9 @@ figure(89), clf, hold on
 for i = 1:length(allstore)
     if isempty(allstore(i).SL_i) == 0
         plot3(repmat(insFR(i),1,171),F(1:171),allstore(i).SL_i(1:171))
+    allstore(i).SL_i_high = mean(allstore(i).SL_i(F<3500 & F > 2500));
+   allstore(i).SL_i_low = mean(allstore(i).SL_i(F<1000));
+   
     end
 end
 

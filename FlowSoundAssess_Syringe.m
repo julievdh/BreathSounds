@@ -57,16 +57,16 @@ fitinfo.a = a; fitinfo.b = b; fitinfo.curve = curve; fitinfo.gof = goodness;
 save([cd '\PneumoData\' filename '_flowsound'],'fitinfo','-append')
 %% Fest = a*log10(shift_y)+b;
 figure(9), clf, subplot(121), hold on
-plot(extractfield(allstore,'soundo'),-extractfield(allstore,'flowo'),'o')
-plot(extractfield(allstore,'sound2o'),-extractfield(allstore,'flowo'),'o')
+%plot(extractfield(allstore,'soundo'),-extractfield(allstore,'flowo'),'o')
+%plot(extractfield(allstore,'sound2o'),-extractfield(allstore,'flowo'),'o')
 plot(allsoundo,-allflowo,'.')
 plot(curve), legend off
 ylabel('Measured Flow Rate (L/s)'), xlabel('Filtered sound envelope'), title ('Syringe Exhale')
 
 text(6E-4,65,num2str(goodness.rsquare,'%4.2f'))
 subplot(122), hold on
-plot(extractfield(allstore,'soundi'),extractfield(allstore,'flowi'),'o')
-plot(extractfield(allstore,'sound2i'),extractfield(allstore,'flowi'),'o')
+%plot(extractfield(allstore,'soundi'),extractfield(allstore,'flowi'),'o')
+%plot(extractfield(allstore,'sound2i'),extractfield(allstore,'flowi'),'o')
 plot(allsoundi,allflowi,'.')
 plot(curvei), legend off
 ylabel('Measured Flow Rate (L/s)'), xlabel('Filtered sound envelope'), title ('Syringe Inhale')
@@ -81,6 +81,7 @@ ypredi = feval(curvei,allsoundi);
 %% for all aligned files
 
 ffs = tickrate(1); % flow sampling rate
+afs = 250000; 
 dr = round(afs/ffs); % decimation rate
 
 VTest = NaN(2,length(tags(f).sin)); VTesti = NaN(2,length(tags(f).sin)); % estimates from both hydrophones
@@ -165,4 +166,4 @@ save([cd '\PneumoData\' filename '_flowsound'],'allstore','VTi','VTe','VTerre','
 %% linear models
 lmo = fitlm(-minflow(pon),[allstore(:).erroro]); 
 lmi = fitlm(mxflow(pon),[allstore(:).errori]); 
-
+lmoVT = fitlm(-minflow(pon),VTerre(1,pon))
