@@ -27,15 +27,15 @@ for f = [9 28 10:25 27]
     T(ct).ngpone = sum(~isnan(VTest(1,:)));
     T(ct).ngponi = sum(~isnan(VTesti(1,:)));
     gidx = find(arrayfun(@(allstore) ~isempty(allstore.erroro),allstore));
-    T(ct).errorofit = nanmean([allstore(gidx(1:5)).erroro]);
-    T(ct).errorifit = nanmean([allstore(gidx(1:5)).errori]);
+    T(ct).errorofit = nanmean(abs([allstore(gidx(1:5)).erroro]));
+    T(ct).errorifit = nanmean(abs([allstore(gidx(1:5)).errori]));
     
-    T(ct).erroro_othr = nanmean([allstore(gidx(6:end)).erroro]);
-    T(ct).errori_othr = nanmean([allstore(gidx(6:end)).errori]);
-    T(ct).VTerre_fit = nanmean(VTerre(1,gidx(1:5)));
-    T(ct).VTerri_fit = nanmean(VTerri(1,gidx(1:5)));
-    T(ct).VTerre_othr = nanmean(VTerre(1,gidx(6:end)));
-    T(ct).VTerri_othr = nanmean(VTerri(1,gidx(6:end)));
+    T(ct).erroro_othr = nanmean(abs([allstore(gidx(6:end)).erroro]));
+    T(ct).errori_othr = nanmean(abs([allstore(gidx(6:end)).errori]));
+    T(ct).VTerre_fit = nanmean(abs(VTerre(1,gidx(1:5))));
+    T(ct).VTerri_fit = nanmean(abs(VTerri(1,gidx(1:5))));
+    T(ct).VTerre_othr = nanmean(abs(VTerre(1,gidx(6:end))));
+    T(ct).VTerri_othr = nanmean(abs(VTerri(1,gidx(6:end))));
     
     T(ct).filename = filename; % pneumotach file name
     T(ct).dep = tag; % tag deployment name
@@ -227,6 +227,19 @@ end
 
 ct = ct+1;
 clear fitinfo
+
+%% plot mean absolute error with distance to see
+figure
+hold on 
+plot([T(1:19).VTerre_othr],[T(:).dist],'^')
+plot([T(1:19).VTerri_othr],[T(:).dist],'v')
+xlabel('Mean Absolute VT Error (L)'), ylabel('Distance (cm)')
+figure
+hold on
+plot([T(1:19).erroro_othr],[T(:).dist],'^')
+plot([T(1:19).errori_othr],[T(:).dist],'v')
+xlabel('Mean Absolute Flow Rate Error (L/s)'), ylabel('Distance (cm)')
+
 
 return
 %% do some counts, minus sarasota animal - numbers for paper
