@@ -51,11 +51,14 @@ plot(VTerri)
 plot(f12.VTerri')
 
 figure(3), clf 
+set(gcf,'paperpositionmode','auto')
 subplot(2,2,1), hold on 
 plot(VTest,[f12(:).VTest],'^')
 plot(VTesti,[f12(:).VTesti],'v')
 xlabel('VT Estimate - Crossed'), ylabel('VT Estimate - Own')
 plot([0 10],[0 10],'k:')
+text(0.5,9,'A','FontSize',16,'FontWeight','Bold')
+
 
 [~,pt(1),~,statt] = ttest(VTest(1,:)',f12.VTest(1,:)');
 [~,pt(2),~,statt(2)] = ttest(VTesti(1,:)',f12.VTesti(1,:)');
@@ -67,7 +70,9 @@ plot(f12.VTi(~isnan([f12.VTest(1,:)])),[f12.allstore(:).errori]','v')
 
 plot(f12.VTe,[f12.allstore2(:).erroro],'^')
 plot(f12.VTi,[f12.allstore2(:).errori],'v')
-xlabel('measured volume (L)'), ylabel('mean flow error - meas vs est')
+xlabel('Measured Volume (L)'), ylabel('Mean Flow Error (L/s)')
+xlim([0 10]), ylim([-20 20])
+text(0.5,16,'B','FontSize',16,'FontWeight','Bold')
 
 erroro1 = [f12.allstore(:).erroro]; 
 erroro2 = [f12.allstore2(:).erroro];
@@ -87,8 +92,9 @@ plot(VTest,[f12(:).VTe],'k^','markerfacecolor','k')
 plot(VTesti,[f12(:).VTi],'kv','markerfacecolor','k')
 plot([f12(:).VTest],[f12(:).VTe],'^')
 plot([f12(:).VTesti],[f12(:).VTi],'v')
-ylabel('measured volume (L)'), xlabel('estimated volume (L)')
+ylabel('Measured Volume (L)'), xlabel('Estimated volume (L)')
 plot([0 10],[0 10],'k:')
+text(0.5,9,'C','FontSize',16,'FontWeight','Bold')
 
 % rmse
 rmse(f12.VTe(~isnan(f12.VTest(1,:))),f12.VTest(1,~isnan(f12.VTest(1,:))))
@@ -98,13 +104,16 @@ rmse(f12.VTe(~isnan(VTest(1,:))),VTest(1,~isnan(VTest(1,:))))
 dfe = f12.VTest(1,:)-VTest(1,:); 
 dfi = f12.VTesti(1,:)-VTesti(1,:); 
 
-[nanmean(dfe) nanstd(dfe)] 
-[nanmean(dfi) nanstd(dfi)]
+[nanmean(dfe) nanstd(dfe)]; 
+[nanmean(dfi) nanstd(dfi)];
 
 pdfe = dfe./f12.VTest(1,:);
 pdfi = dfi./f12.VTesti(1,:);
 
 subplot(2,2,4), hold on 
-plot(f12.VTe,pdfe,'^')
-plot(f12.VTi,pdfi,'v')
-xlabel('measured volume (L)'), ylabel('Difference in Estimated VT (L)')
+plot(f12.VTe,pdfe*100,'^')
+plot(f12.VTi,pdfi*100,'v')
+xlabel('measured volume (L)'), ylabel('% Difference in Estimated VT')
+xlim([0 10]),text(0.5,15,'D','FontSize',16,'FontWeight','Bold')
+
+print([cd '\AnalysisFigures\CrossVal_f10f12'],'-dpng','-r300')
