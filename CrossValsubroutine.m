@@ -3,6 +3,12 @@
 VTest = NaN(size(f12.VTest)); VTesti = NaN(size(f12.VTest)); % initialize VT estimate from sound
 % Sint1 = NaN(1,length(CUE_R)); Sint2 = NaN(1,length(CUE_R));
 
+% extract fit info
+%a = f12.fitinfo.a; ai = f12.fitinfo.ai; b = f12.fitinfo.b; bi = f12.fitinfo.bi; 
+%afs = f12.afs; ffs = 1/diff(f12.cuts(1).flow(1:2,1));
+%dr = round(afs/ffs); % decimation rate
+
+
 figure(19), clf, hold on
 for n = 1:length(f12.allstore)
     % estimate flow from sound
@@ -34,17 +40,25 @@ end
 VTesti(VTesti < 0.5) = NaN; VTesti(VTesti > 25) = NaN;  
 VTest(VTest < 0.5) = NaN; VTest(VTest > 25) = NaN; 
 
+% calculate VTerre and VTerri
+VTerre = VTest(1,:) - f12.VTe;
+VTerri = VTesti(1,:) - f12.VTi;
+
+figure(5), hold on 
+plot(VTerre)
+plot(f12.VTerre')
+plot(VTerri)
+plot(f12.VTerri')
 
 figure(3), clf 
 subplot(2,2,1), hold on 
 plot(VTest,[f12(:).VTest],'^')
 plot(VTesti,[f12(:).VTesti],'v')
-xlabel('other relationship'), ylabel('proper relationship')
+xlabel('VT Estimate - Crossed'), ylabel('VT Estimate - Own')
 plot([0 10],[0 10],'k:')
 
-[~,pt(1),~,statt] = ttest(VTest(1,:),f12.VTest(1,:));
-[~,pt(2),~,statt(2)] = ttest(VTesti(1,:),f12.VTesti(1,:));
-
+[~,pt(1),~,statt] = ttest(VTest(1,:)',f12.VTest(1,:)');
+[~,pt(2),~,statt(2)] = ttest(VTesti(1,:)',f12.VTesti(1,:)');
 % linear model here - error as a function of volume
 
 subplot(2,2,2), hold on 
@@ -55,24 +69,42 @@ plot(f12.VTe,[f12.allstore2(:).erroro],'^')
 plot(f12.VTi,[f12.allstore2(:).errori],'v')
 xlabel('measured volume (L)'), ylabel('mean flow error - meas vs est')
 
-[~,pf(1),~,statf] = ttest2([f12.allstore(:).erroro],[f12.allstore2(:).erroro]);
-[~,pf(2),~,statf(2)] = ttest2([f12.allstore(:).errori],[f12.allstore2(:).errori]);
+erroro1 = [f12.allstore(:).erroro]; 
+erroro2 = [f12.allstore2(:).erroro];
+erroro2(isnan(erroro2)) = []; 
+errori1 = [f12.allstore(:).errori]; 
+errori1(isnan(errori1)) = []; 
+errori2 = [f12.allstore2(:).errori];
+errori2(isnan(errori2)) = []; 
 
+
+[~,pf(1),~,statf] = ttest(erroro1',erroro2');
+[~,pf(2),~,statf(2)] = ttest(errori1',errori2');
+mean(erroro2), mean(errori2)
 
 subplot(2,2,3), hold on 
-plot(VTest,[f12(:).VTe],'^','markerfacecolor','k')
-plot(VTesti,[f12(:).VTi],'v','markerfacecolor','k')
+plot(VTest,[f12(:).VTe],'k^','markerfacecolor','k')
+plot(VTesti,[f12(:).VTi],'kv','markerfacecolor','k')
 plot([f12(:).VTest],[f12(:).VTe],'^')
 plot([f12(:).VTesti],[f12(:).VTi],'v')
 ylabel('measured volume (L)'), xlabel('estimated volume (L)')
 plot([0 10],[0 10],'k:')
 
-subplot(2,2,4), hold on 
-plot(f12.VTe,[f12.allstore2(:).erroroF],'^')
-plot(f12.VTi,[f12.allstore2(:).erroriF],'v')
-xlabel('measured volume (L)'), ylabel('mean flow error - est1 vs est2 (L/s)')
-
 % rmse
 rmse(f12.VTe(~isnan(f12.VTest(1,:))),f12.VTest(1,~isnan(f12.VTest(1,:))))
 rmse(f12.VTe(~isnan(VTest(1,:))),VTest(1,~isnan(VTest(1,:))))
 
+% difference between the two 
+dfe = f12.VTest(1,:)-VTest(1,:); 
+dfi = f12.VTesti(1,:)-VTesti(1,:); 
+
+[nanmean(dfe) nanstd(dfe)] 
+[nanmean(dfi) nanstd(dfi)]
+
+pdfe = dfe./f12.VTest(1,:);
+pdfi = dfi./f12.VTesti(1,:);
+
+subplot(2,2,4), hold on 
+plot(f12.VTe,pdfe,'^')
+plot(f12.VTi,pdfi,'v')
+xlabel('measured volume (L)'), ylabel('Difference in Estimated VT (L)')
