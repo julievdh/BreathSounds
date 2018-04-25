@@ -9,7 +9,7 @@ FlowSoundAssess
 loadprh(tag)
 t = (1:length(p))/(fs)/60;
 %%
-figure(29), hold on 
+figure(2), hold on 
 plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
 plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^')
