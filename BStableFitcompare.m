@@ -115,17 +115,23 @@ for f = 1:17
     T(ct).ngpone = sum(~isnan(VTest(1,:)));
     T(ct).ngponi = sum(~isnan(VTesti(1,:)));
     
+    if isempty(DQ{f,7}) == 1
+        T(ct).dist = NaN; 
+    else 
+    T(ct).dist = DQ{f,7}; % distance to blowhole
+    end 
+    
     gidx = find(arrayfun(@(allstore) ~isempty(allstore.erroro),allstore));
-    T(ct).errorofit = nanmean([allstore(gidx(1:5)).erroro]);
-    T(ct).errorifit = nanmean([allstore(gidx(1:5)).errori]);
+    T(ct).errorofit = nanmean(abs([allstore(gidx(1:5)).erroro]));
+    T(ct).errorifit = nanmean(abs([allstore(gidx(1:5)).errori]));
     
-    T(ct).erroro_othr = nanmean([allstore(gidx(6:end)).erroro]);
-    T(ct).errori_othr = nanmean([allstore(gidx(6:end)).errori]);
+    T(ct).erroro_othr = nanmean(abs([allstore(gidx(6:end)).erroro]));
+    T(ct).errori_othr = nanmean(abs([allstore(gidx(6:end)).errori]));
     
-    T(ct).VTerre_fit = nanmean(VTerre(1,gidx(1:5)));
-    T(ct).VTerri_fit = nanmean(VTerri(1,gidx(1:5)));
-    T(ct).VTerre_othr = nanmean(VTerre(1,gidx(6:end)));
-    T(ct).VTerri_othr = nanmean(VTerri(1,gidx(6:end)));
+    T(ct).VTerre_fit = nanmean(abs(VTerre(1,gidx(1:5))));
+    T(ct).VTerri_fit = nanmean(abs(VTerri(1,gidx(1:5))));
+    T(ct).VTerre_othr = nanmean(abs(VTerre(1,gidx(6:end))));
+    T(ct).VTerri_othr = nanmean(abs(VTerri(1,gidx(6:end))));
     
     
     T(ct).ngpoff = length(find(~ismember(1:size(breath.cue),CUE))); % size(find(Quality == 0),1) + size(find(Quality == 20),1) - sum(~isnan(CUE_R)); % good sound without pneumotach
@@ -148,6 +154,16 @@ for f = 1:17
         subplot(414), hold on
         plot(ct,fitinfo.b,'kd','markerfacecolor',T(ct).col)
         
+        figure(13),
+    subplot(221), hold on
+    plot(T(ct).dist,fitinfo.ai,'kd','markerfacecolor',T(ct).col)
+    subplot(222), hold on
+    plot(T(ct).dist,fitinfo.bi,'kd','markerfacecolor',T(ct).col)
+    subplot(223), hold on
+    plot(T(ct).dist,fitinfo.a,'kd','markerfacecolor',T(ct).col)
+    subplot(224), hold on
+    plot(T(ct).dist,fitinfo.b,'kd','markerfacecolor',T(ct).col)
+    
     end
     
     ct = ct+1;
@@ -155,6 +171,7 @@ for f = 1:17
 end
 
 % add labels etc
+figure(12)
 xlabel('File number')
 subplot(411), title('inhale a')
 subplot(412), title('inhale b')
@@ -191,16 +208,16 @@ T(ct).ngpone = sum(~isnan(VTest(1,:)));
 T(ct).ngponi = sum(~isnan(VTesti(1,:)));
 
 gidx = find(arrayfun(@(allstore) ~isempty(allstore.erroro),allstore));
-T(ct).errorofit = nanmean([allstore(gidx(1:5)).erroro]);
-T(ct).errorifit = nanmean([allstore(gidx(1:5)).errori]);
+T(ct).errorofit = nanmean(abs([allstore(gidx(1:5)).erroro]));
+T(ct).errorifit = nanmean(abs([allstore(gidx(1:5)).errori]));
 
-T(ct).erroro_othr = nanmean([allstore(gidx(6:end)).erroro]);
-T(ct).errori_othr = nanmean([allstore(gidx(6:end)).errori]);
+T(ct).erroro_othr = nanmean(abs([allstore(gidx(6:end)).erroro]));
+T(ct).errori_othr = nanmean(abs([allstore(gidx(6:end)).errori]));
 
-T(ct).VTerre_fit = nanmean(VTerre(1,gidx(1:5)));
-T(ct).VTerri_fit = nanmean(VTerri(1,gidx(1:5)));
-T(ct).VTerre_othr = nanmean(VTerre(1,gidx(6:end)));
-T(ct).VTerri_othr = nanmean(VTerri(1,gidx(6:end)));
+T(ct).VTerre_fit = nanmean(abs(VTerre(1,gidx(1:5))));
+T(ct).VTerri_fit = nanmean(abs(VTerri(1,gidx(1:5))));
+T(ct).VTerre_othr = nanmean(abs(VTerre(1,gidx(6:end))));
+T(ct).VTerri_othr = nanmean(abs(VTerri(1,gidx(6:end))));
 
 T(ct).ngpoff = length(find(~ismember(1:size(breath.cue),CUE))); % size(find(Quality == 0),1) + size(find(Quality == 20),1) - sum(~isnan(CUE_R)); % good sound without pneumotach
 T(ct).filename = filename;
@@ -231,13 +248,13 @@ clear fitinfo
 %% plot mean absolute error with distance to see
 figure
 hold on 
-plot([T(1:19).VTerre_othr],[T(:).dist],'^')
-plot([T(1:19).VTerri_othr],[T(:).dist],'v')
+plot([T(1:36).VTerre_othr],[T(:).dist],'^')
+plot([T(1:36).VTerri_othr],[T(:).dist],'v')
 xlabel('Mean Absolute VT Error (L)'), ylabel('Distance (cm)')
 figure
 hold on
-plot([T(1:19).erroro_othr],[T(:).dist],'^')
-plot([T(1:19).errori_othr],[T(:).dist],'v')
+plot([T(1:36).erroro_othr],[T(:).dist],'^')
+plot([T(1:36).errori_othr],[T(:).dist],'v')
 xlabel('Mean Absolute Flow Rate Error (L/s)'), ylabel('Distance (cm)')
 
 
