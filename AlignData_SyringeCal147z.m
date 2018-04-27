@@ -128,7 +128,7 @@ ha = tight_subplot(15,5,[.03 .03],[.08 .01],[.1 .01]);
 for k = 1:length(sigstore(f).o)
     axes(ha(k)); hold on;
     bspectrogram(sigstore(f).o{1,k},afs,[0 length(sigstore(f).o{1,k})/afs]); % tags(f).sout(k,:));
-    [SL_o(:,k),F] = speclev(sigstore(f).o{1,k},2048,afs);
+    [SL_o(:,k),F] = spectrum_level(sigstore(f).o{1,k},2048,afs);
 end
 linkaxes
 set(ha(end-4:end),'XTick',[0 0.4],'XTicklabels',[0 0.4])
@@ -146,7 +146,7 @@ print([cd '\AnalysisFigures\Syringe_147z_assay_out'],'-dpng','-r300')
 figure(5), clf
 for k = 1:length(sigstore(f).o)
     subplot(15,5,k), hold on
-    [SL_o(:,k),F] = speclev(sigstore(f).o{1,k},2048,afs);
+    [SL_o(:,k),F] = spectrum_level(sigstore(f).o{1,k},2048,afs);
     plot(SL_o(:,k),F)
     axis([-150 -60 0 5E3])
 %     lth = 2000; hth = 4000;
@@ -165,7 +165,7 @@ ha = tight_subplot(15,5,[.03 .03],[.08 .01],[.1 .01]);
 for k = 1:length(sigstore(f).i)
     axes(ha(k)); hold on;
     bspectrogram(sigstore(f).i{1,k},afs,[0 length(sigstore(f).i{1,k})/afs]); % tags(f).sout(k,:));
-    [SL_i(:,k),F] = speclev(sigstore(f).i{1,k},2048,afs);
+    [SL_i(:,k),F] = spectrum_level(sigstore(f).i{1,k},2048,afs);
 end
 linkaxes
 set(ha(end-4:end),'XTick',[0 0.4],'XTicklabels',[0 0.4])
@@ -183,7 +183,7 @@ print([cd '\AnalysisFigures\Syringe_147z_assay_in'],'-dpng','-r300')
 figure(7), clf
 for k = 1:length(sigstore(f).i)
     subplot(15,5,k), hold on
-    [SL_i(:,k),F] = speclev(sigstore(f).i{1,k},2048,afs);
+    [SL_i(:,k),F] = spectrum_level(sigstore(f).i{1,k},2048,afs);
     plot(SL_i(:,k),F)
     axis([-150 -60 0 5E3])
     %lth = 2000; hth = 4000;
@@ -308,7 +308,7 @@ L = find(F < 0.5E4,1,'last'); % zoom in on the first half of F range
 allminflow = [minflow{:}];
 [cvec,c_all] = getcmap(dist3); % colormap by distance
 for i = 1:length(pon3)
-    plot3(F(1:L),zeros(L,1)+abs(allminflow(i)),Pxx(1:L,pon3(i))/sum(Pxx(1:L,pon3(i))),'color',c_all(pon3(i),:))
+    plot3(F(1:L),zeros(1,L)+abs(allminflow(i)),Pxx(1:L,pon3(i))/sum(Pxx(1:L,pon3(i))),'color',c_all(pon3(i),:))
 end
 xlabel('Frequency'), ylabel('Max Exhaled Flow Rate (L/s)'), zlabel('norm PSD')
 
