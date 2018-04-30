@@ -7,13 +7,13 @@
 
 n = max(pon); % number of breaths - try this
 mass = assignmass(filename); 
-TLC = 0.135*mass^0.92; % estimate from Kooyman 
+TLC = 0.135*mass^0.92; % estimate from Kooyman 1973 
 
 % Method A: VT = 80% of TLC, O2 extraction = 10%
 % following e.g. Armstrong and Siegfried 1991, Dolphin 1987a
-VTa = repmat(0.8*0.0567*mass^1.03,n,1); % litres
+%VTa = repmat(0.8*0.0567*mass^1.03,n,1); % litres
 O2a = 0.10; % percent
-VO2_a = VTa.*O2a; % L O2 per breath
+%VO2_a = VTa.*O2a; % L O2 per breath
 
 % Method 2: 60% of TLC, using Kooyman 0.135*Mb^0.92
 VTb = repmat(0.6*0.135*mass^0.92,n,1); % litres
@@ -32,24 +32,20 @@ end
 % This will be less straightforward as there are missing breaths in the
 % time series
 
+
 %% plot tidal volume through time 
 figure(38), clf, hold on
-%plot(breath.cue(pon)/60,VTa(pon),'o-','color',[0.75 0.75 0.75])
+% when stationed, pneumotach on
 plot(breath.cue(pon)/60,VTb(pon),'o-','color',[0.75 0.75 0.75])
 
-%plot(breath.cue(q)/60,VTa(q),'o-','color',[0.75 0.75 0.75])
+% when free-swimming
 plot(breath.cue(q)/60,VTb(q),'o-','color',[0.75 0.75 0.75])
 
-% H = plot_ci(breath.cue(pon,1),yci,...
-% 'patchcolor',[0.6350    0.0780    0.1840],'patchalpha',0.5,'linecolor','w');
-% plot(breath.cue(pon,1),pred1,'ko','markerfacecolor',[0.6350    0.0780    0.1840])
-
 plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
-plot(breath.cue(pon)/60,VTest(~isnan(CUE_R)),'^','color',[0    0.4470    0.7410])
-plot(breath.cue(CUE_R(VTesti > 0.5))/60,VTesti(VTesti > 0.5),'v','color',[0.8500    0.3250    0.0980])
+plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^')
+plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
 xlim([breath.cue(pon(1))/60-1 breath.cue(pon(end))/60+1])
-ylim([0 TLC])
-
+set(gca,'ylim',[0 TLC])
 
 for n = 1:length(q)
 plot(breath.cue(q(n))/60,surfstore(n).VTesti,'kv')
@@ -63,10 +59,15 @@ xlabel('Time (min)'), ylabel('Tidal Volume (L)')
 
 %% 
 figure(30), clf, hold on
+VTe(find(isnan(VTe))) = nanmean([VTe,VTi]);
+VTi(find(isnan(VTi))) = nanmean([VTe,VTi]); 
 plot(breath.cue(pon),cumsum(VTe(~isnan(CUE_R))),'k.-')
+plot(breath.cue(pon),cumsum(VTi(~isnan(CUE_R))),'k.-')
+
 % plot(breath.cue(pon),cumsum(VTs(pnum,2)),'.-','color',[0    0.4470
 % 0.7410]) % other hydrophone 
 % replace NaNs in VTest with MEAN FOR NOW
+VTest = VTest(1,:); VTesti = VTesti(1,:); 
 VTest(find(isnan(VTest))) = nanmean([VTest,VTesti]);
 VTesti(find(isnan(VTesti))) = nanmean([VTest,VTesti]);
 
@@ -80,8 +81,7 @@ VTestall = sortrows(VTestall,1); % sort by breath cue
 plot(breath.cue(pon,1),cumsum(VTest(~isnan(CUE_R))),'.-','color',[0    0.4470    0.7410])
 plot(breath.cue(pon,1),cumsum(VTesti(~isnan(CUE_R))),'.-','color',[0.8500    0.3250    0.0980])
 
-plot(breath.cue(pon,1),cumsum(VTa(pon)),'color',[0.75 0.75 0.75]) % based on VT estimate from TLC
-plot(breath.cue(pon,1),cumsum(VTb(pon)),'color',[0.75 0.75 0.75])
+plot(breath.cue(pon,1),cumsum(VTb(pon)),'color',[0.75 0.75 0.75]) % based on VT estimate from TLC
 xlabel('Time (sec)'), ylabel('Cumulative Volume (L)')
 
 % how good are we at estimating tidal volume? 
@@ -91,13 +91,29 @@ diff_sm_in = max(cumsum(VTe(~isnan(CUE_R))) - max(cumsum(VTesti)));
 
 tdiff = (breath.cue(pon(end)) - breath.cue(pon(1)))/60; % duration of trial, in minutes
 
-% between estimated Method A, Method B, and measured
-diff_em_aex = max(cumsum(VTest)) - max(cumsum(VTa(pon)));
+% between estimated constant Method, and measured
 diff_em_bex = max(cumsum(VTest)) - max(cumsum(VTb(pon)));
-diff_em_ain = max(cumsum(VTesti)) - max(cumsum(VTa(pon)));
 diff_em_bin = max(cumsum(VTesti)) - max(cumsum(VTb(pon)));
 
-%% add breaths with off
+%% calculate minute ventilation
+% when stationed
+iRR = 60./diff(breath.cue(pon,1)); % instantaneous respiratory rate
+iVe_me = iRR.*real(VTe(~isnan(CUE_R(2:end))))'; % instantaneous VE measured exhale
+iVe_mi = iRR.*real(VTi(~isnan(CUE_R(2:end))))'; % instantaneous VE measured inhale
+iVe_ee = iRR.*real(VTest(~isnan(CUE_R(2:end))))'; % instantaneous VE measured inhale
+iVe_ei = iRR.*real(VTesti(~isnan(CUE_R(2:end))))'; % instantaneous VE measured inhale
+iVe_const = iRR*0.6*TLC; % 0.6*TLC; 
+
+% resample to even grid
+[Ve_c,TVe] = resample(iVe_const,breath.cue(pon(2:end),1)/60,2); % 30s intervals
+Ve_me = resample(iVe_me,breath.cue(pon(2:eclf'; % instantaneous VE
+iVe_const = iRR*0.6*TLC; % 0.6*TLC; 
+
+% resample to even grid
+[Ve_c,TVe_c] = resample(iVe_const,breath.cue(q(2:end),1)/60,2); % 30s intervals
+[Ve,TVe] = resample(iVe_me,breath.cue(q(2:end),1)/60,2); % so this is at 30s intervals
+
+
 figure(39), clf, hold on 
 allb = sort(vertcat(q,pon)); 
 plot(breath.cue(allb,1)/60,cumsum(VTa(allb)),'color',[0.75 0.75 0.75])
