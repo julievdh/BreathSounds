@@ -33,6 +33,12 @@ histogram(iRR,'facecolor',[0.5 0.5 0.5])
 axis ij, axis off 
 print('gm11_248c_depth_resp_hist','-dpng','-r300')
 
+figure(1), clf, hold on 
+set(gcf,'position',[68.3333  377.6667  580.0000  240.0000],...
+    'paperpositionmode','auto')
+plotaudit_tt('gm11_248c',0); legend('location','SW')
+print('gm11_248c_audit','-dpng','-r300')
+
 %% zoom 
 figure(2), clf, hold on 
 set(gcf,'position',[68.3333  377.6667  852.0000  240.0000],...
