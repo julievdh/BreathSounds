@@ -5,6 +5,8 @@ loadprh(tag)
 R = loadaudit(tag);
 [~,breath] = findbreathcues(R);
 p = correctdepth(p,fs);
+t = (1:length(p))/(fs)/60;   % time in minutes
+
 
 cues = [2600 3000]; %[9100 9300]; % for 127a = [8800 8950];
 
@@ -50,20 +52,10 @@ q = find(Quality == 20);
 bs = find(iswithin(breath.cue(q,1),cues));
 real(VTi_swim(bs));
 
-%% plot all VT and depth and such
-t = (1:length(p))/(fs)/60;   % time in minutes
-figure(29), clf
-hold on
-for n = 1:length(q)
-    plot(breath.cue(q(n))/60,surfstore(n).VTesti,'kv','markerfacecolor',[0.5 0.5 0.5])
-    % plot(breath.cue(q(n))/60,surfstore(n).VTesto,'k^')
-end
-plot(t,-p,'Linewidth',1,'color','k')
-
 
 %%
 figure(99), clf, hold on 
-plot((cues(1):(1/fs):cues(2))/60,-p(cues(1)*fs:cues(2)*fs), 'linewidth',1)
+plot((cues(1):(1/fs):cues(2))/60,-p(cues(1)*fs:cues(2)*fs), 'linewidth',1,'color','k')
 plot(breath.cue(q(bs),1)/60,real(VTi_swim(bs)),'kv','markerfacecolor',[0.25 0.25 0.25])
 iRR = 60./diff(breath.cue(q,1)); 
 % plot(breath.cue(q(2:end),1)/60,iRR,'.-','color',[0.5 0.5 0.5])
@@ -81,16 +73,17 @@ Ve_i = resample(iVe_ei,breath.cue(q(1:end-1),1)/60,2); % instantaneous VE
 
 plot(TVe+0.25,Ve_i,'.-','color','k')
 plot(TVe+0.25,Ve_MN,'.-','color',[0.5 0.5 0.5])
-plot(TVe+0.25,Ve_TLC,'.-','color',[0.5 0.5 0.5])
+%plot(TVe+0.25,Ve_TLC,'.-','color',[0.5 0.5 0.5])
 
 xlim([43.5 50]), ylim([-10 32])
 xlabel('Time (min)'), adjustfigurefont
 
-print([cd '\AnalysisFigures\' tag 'depthVT_min'],'-dpng','-r300')
+print([cd '\AnalysisFigures\' tag 'depthVT_min1'],'-dpng','-r300')
  
 
 %% breaths with pneumotach and after release depth 
 figure(43), clf, hold on 
+set(gcf,'position',1E3[2.1817   -0.2237    0.8473    0.3347],'paperpositionmode','auto')
 plot(t,-p,'Linewidth',1,'color','k')
 xlim([20 53])
 % tt126b_depth_VTest.fig 
@@ -105,6 +98,30 @@ plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v','color',[0.8500    0.3250   
 plot(breath.cue(q)/60,VTi_swim,'kv','markerfacecolor',[0.5 0.5 0.5]) % swimming
 
 print([cd '\AnalysisFigures\' tag 'depthVT_release'],'-dpng','-r300')
+
+% some numbers
+% minute ventilation is off by as much as:
+max(abs(Ve_i-Ve_MN)) % in L/min
+max(abs(Ve_i-Ve_MN))./nanmean(Ve_MN(1:1007)) % in percent
+
+%% plot all VT and depth and such
+figure(29), clf
+set(gcf,'position',1E3*[0.0083    0.1823    1.2640    0.4353],'paperpositionmode','auto')
+hold on
+for n = 1:length(q)
+    plot(breath.cue(q(n))/3600,surfstore(n).VTesti,'kv','markerfacecolor',[0.5 0.5 0.5])
+    % plot(breath.cue(q(n))/60,surfstore(n).VTesto,'k^')
+end
+plot(t/60,-p,'Linewidth',1,'color','k')
+
+plot(breath.cue(pon)/3600,VTi(~isnan(CUE_R)),'k.','markersize',10)
+%plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^','color',[0    0.4470    0.7410]) % estimated
+plot(breath.cue(pon)/3600,VTesti(1,~isnan(CUE_R)),'v','color',[0.8500    0.3250    0.0980])
+
+ylim([-10 8])
+xlim([20 610]/60)
+
+print([cd '\AnalysisFigures\' tag 'depthVT_full'],'-dpng','-r300')
 
 return 
 % calculate instantaneous breath rate
