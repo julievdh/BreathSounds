@@ -58,7 +58,7 @@ for n = 1:length(q)
     plot(breath.cue(q(n))/60,surfstore(n).VTesti,'kv','markerfacecolor',[0.5 0.5 0.5])
     % plot(breath.cue(q(n))/60,surfstore(n).VTesto,'k^')
 end
-plot(t,-p,'Linewidth',1)
+plot(t,-p,'Linewidth',1,'color','k')
 
 
 %%
@@ -87,24 +87,29 @@ xlim([43.5 50]), ylim([-10 32])
 xlabel('Time (min)'), adjustfigurefont
 
 print([cd '\AnalysisFigures\' tag 'depthVT_min'],'-dpng','-r300')
-
-return 
+ 
 
 %% breaths with pneumotach and after release depth 
 figure(43), clf, hold on 
-plot(t,-p,'Linewidth',1)
+plot(t,-p,'Linewidth',1,'color','k')
 xlim([20 53])
 % tt126b_depth_VTest.fig 
+load([cd '\PneumoData\' filename])
+load([cd '\PneumoData\6May2014_water_tt126b_FB142_resp_flowsound'])
+CUE_R = CUE(find(CUE)); pon = CUE_R(~isnan(CUE_R)); % all of the breaths where have pneumotach on
+%plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10) % measured 
+plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
+%plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^','color',[0    0.4470    0.7410]) % estimated
+plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v','color',[0.8500    0.3250    0.0980])
 
+plot(breath.cue(q)/60,VTi_swim,'kv','markerfacecolor',[0.5 0.5 0.5]) % swimming
+
+print([cd '\AnalysisFigures\' tag 'depthVT_release'],'-dpng','-r300')
+
+return 
 % calculate instantaneous breath rate
-tdiff = diff(unique(breath.cue(q,1)));
-iRR = 60./tdiff;  iRR(iRR < 0.5) = NaN;
-plot(breath.cue(q(1:end-1),1)/60,iRR,'.-','color',[0.5 0.5 0.5])
+plot(TVe+0.25,Ve_i,'.-','color','k')
+plot(TVe+0.25,Ve_MN,'.-','color',[0.5 0.5 0.5])
+plot(TVe+0.25,Ve_TLC,'.-','color',[0.5 0.5 0.5])
 
-
-iVT = iRR.*VTi_swim(1:end-1)'; 
-plot(breath.cue(q(1:end-1),1)/60,iVT,'.-','color',[0.25 0.25 0.25])
-TLC = 0.135*291^0.92; % FB 142 = 291 kg
-iVT_const = iRR*0.6*TLC; % try 0.6 of TLC 
-plot(breath.cue(q(1:end-1),1)/60,iVT_const,'.-','color','k')
-
+ylim([-10 8])
