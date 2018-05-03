@@ -220,13 +220,20 @@ f12 = load([cd '\PneumoData\' filename '_flowsound.mat']); % variable still call
 CrossValsubroutine
 print([cd '\AnalysisFigures\CrossVal_hist_f10f' num2str(f)],'-dpng','-r300')
 
-
+%%
 figure(3), clf
+set(gcf,'position',1E3*[1.9563    0.0897    1.1147    0.3427], 'paperpositionmode','auto')
 subplot(131), hold on 
-plot(VTest(1,:),[f12(:).VTest(1,:)],'^')
-plot(VTesti(1,:),[f12(:).VTesti(1,:)],'v')
-xlabel('VT Estimate - Crossed'), ylabel('VT Estimate - Own')
-plot([0 10],[0 10],'k:')
+[ax1, ax2, ax3] = scatterhist3(f12.VTest(1,:),VTest(1,:),'^',1,0.5,1);
+[ax1, ax2, ax3] = scatterhist3(f12.VTesti(1,:),VTesti(1,:),'v',1,0.5,1);
+set(ax1,'position',[0.08 0.1245 0.2 0.6])
+set(ax2,'position',[0.3 0.1245 0.05 0.6])
+set(ax3,'position',[0.08 0.8 0.2 0.15])
+%plot(VTest(1,:),[f12(:).VTest(1,:)],'^')
+%plot(VTesti(1,:),[f12(:).VTesti(1,:)],'v')
+
+xlabel(ax1,'VT Estimate - Crossed'), ylabel(ax1,'VT Estimate - Own')
+plot(ax1,[0 20],[0 20],'k:')
 text(0.5,9.5,'A','FontSize',16,'FontWeight','Bold')
 
 subplot(132), hold on 
@@ -244,6 +251,7 @@ plot([f12(:).VTest(1,:)],[f12(:).VTe],'^')
 plot(VTest(1,:)*scl,[f12(:).VTe],'k^')
 plot(VTesti(1,:)*scl,[f12(:).VTi],'kv')
 plot([0 10],[0 10],'k:')
+ylabel('Measured Volume (L)'), xlabel('Estimated Volume (L)')
 text(0.5,9.5,'C','FontSize',16,'FontWeight','Bold')
 
 print([cd '\AnalysisFigures\CrossVal_f10f' num2str(f)],'-dpng','-r300')
