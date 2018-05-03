@@ -210,13 +210,41 @@ filename = strcat(DQ{f,2},'_resp');
 f12 = load([cd '\PneumoData\' filename '_flowsound.mat']); 
 
 CrossValsubroutine
-print([cd '\AnalysisFigures\CrossVal_f10f12'],'-dpng','-r300')
+figure(3), print([cd '\AnalysisFigures\CrossVal_f10f12'],'-dpng','-r300')
 
 %% apply to a different animal
-f = 6; 
+f = 9; 
 filename = strcat(DQ{f,2},'_resp');
 f12 = load([cd '\PneumoData\' filename '_flowsound.mat']); % variable still called f12, but for file 9
 
 CrossValsubroutine
+print([cd '\AnalysisFigures\CrossVal_hist_f10f' num2str(f)],'-dpng','-r300')
+
+
+figure(3), clf
+subplot(131), hold on 
+plot(VTest(1,:),[f12(:).VTest(1,:)],'^')
+plot(VTesti(1,:),[f12(:).VTesti(1,:)],'v')
+xlabel('VT Estimate - Crossed'), ylabel('VT Estimate - Own')
+plot([0 10],[0 10],'k:')
+text(0.5,9.5,'A','FontSize',16,'FontWeight','Bold')
+
+subplot(132), hold on 
+plot(VTest(1,:),[f12(:).VTe],'k^')%,'markerfacecolor','k')
+plot(VTesti(1,:),[f12(:).VTi],'kv')%,'markerfacecolor','k')
+plot([f12(:).VTest(1,:)],[f12(:).VTe],'^')
+plot([f12(:).VTesti(1,:)],[f12(:).VTi],'v')
+ylabel('Measured Volume (L)'), xlabel('Estimated Volume (L)')
+plot([0 10],[0 10],'k:')
+text(0.5,9.5,'B','FontSize',16,'FontWeight','Bold')
+
+subplot(133), hold on 
+plot([f12(:).VTesti(1,:)],[f12(:).VTi],'v')
+plot([f12(:).VTest(1,:)],[f12(:).VTe],'^')
+plot(VTest(1,:)*scl,[f12(:).VTe],'k^')
+plot(VTesti(1,:)*scl,[f12(:).VTi],'kv')
+plot([0 10],[0 10],'k:')
+text(0.5,9.5,'C','FontSize',16,'FontWeight','Bold')
+
 print([cd '\AnalysisFigures\CrossVal_f10f' num2str(f)],'-dpng','-r300')
 

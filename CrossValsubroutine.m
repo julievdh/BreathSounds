@@ -114,12 +114,18 @@ subplot(2,2,4), hold on
 plot(f12.VTe,pdfe*100,'^')
 plot(f12.VTi,pdfi*100,'v')
 xlabel('Measured Volume (L)'), ylabel('% Difference in Estimated VT')
-xlim([0 10]),text(0.5,15,'D','FontSize',16,'FontWeight','Bold')
+xlim([0 10]), yl = ylim; 
+text(0.5,yl(2)-(yl(2)-yl(1))*0.08,'D','FontSize',16,'FontWeight','Bold')
 
-% compare variance of VT estimates 
-[~,pvar(1),~,statvar(1)] = vartest2(VTest(1,:),f12.VTest(1,:)-VTest(1,:));
-[~,pvar(2),~,statvar(2)] = vartest2(VTesti(1,:),f12.VTesti(1,:)-VTesti(1,:));
+% compare variance of VT estimates
+% correct for difference in means
+scl = nanmean(f12.VTest(1,:)./VTest(1,:));
+scli = nanmean(f12.VTesti(1,:)./VTesti(1,:));
+
+% vartest on that 
+[~,pvar(1),~,statvar(1)] = vartest2(VTest(1,:),f12.VTest(1,:)/scl);
+[~,pvar(2),~,statvar(2)] = vartest2(VTesti(1,:),f12.VTesti(1,:)/scli);
 
 figure, hold on 
-[ax1, ax2, ax3] = scatterhist3(f12.VTest(1,:),VTest(1,:),'^',1);
-[ax1, ax2, ax3] = scatterhist3(f12.VTesti(1,:),VTesti(1,:),'v',1);
+[ax1, ax2, ax3] = scatterhist3(f12.VTest(1,:),VTest(1,:),'^',1,0.5,1);
+[ax1, ax2, ax3] = scatterhist3(f12.VTesti(1,:),VTesti(1,:),'v',1,0.5,1);
