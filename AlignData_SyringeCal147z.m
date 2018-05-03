@@ -123,16 +123,16 @@ end
 figure(4), clf
 set(gcf,'position',1000*[2.9783   -0.3117    0.5607    0.9520],...
     'paperpositionmode','auto')
-ha = tight_subplot(15,5,[.03 .03],[.08 .01],[.1 .01]);
+ha = tight_subplot(14,5,[.03 .03],[.08 .01],[.1 .01]);
 
-for k = 1:length(sigstore(f).o)
-    axes(ha(k)); hold on;
+for k = 6:length(sigstore(f).o)
+    axes(ha(k-5)); hold on;
     bspectrogram(sigstore(f).o{1,k},afs,[0 length(sigstore(f).o{1,k})/afs]); % tags(f).sout(k,:));
     [SL_o(:,k),F] = spectrum_level(sigstore(f).o{1,k},2048,afs);
 end
 linkaxes
 set(ha(end-4:end),'XTick',[0 0.4],'XTicklabels',[0 0.4])
-set(ha(1:5:75),'Ytick',[0 20],'yticklabels',[0 20])
+set(ha(1:5:70),'Ytick',[0 20],'yticklabels',[0 20])
 
 [ax2,h2]=suplabel('Frequency (kHz)','y');
 set(h2,'position',[-0.02 0.5 0])
@@ -160,16 +160,16 @@ end
 figure(6), clf
 set(gcf,'position',1000*[2.9783   -0.3117    0.5607    0.9520],...
     'paperpositionmode','auto')
-ha = tight_subplot(15,5,[.03 .03],[.08 .01],[.1 .01]);
+ha = tight_subplot(14,5,[.03 .03],[.08 .01],[.1 .01]);
 
-for k = 1:length(sigstore(f).i)
-    axes(ha(k)); hold on;
+for k = 6:length(sigstore(f).i)
+    axes(ha(k-5)); hold on;
     bspectrogram(sigstore(f).i{1,k},afs,[0 length(sigstore(f).i{1,k})/afs]); % tags(f).sout(k,:));
     [SL_i(:,k),F] = spectrum_level(sigstore(f).i{1,k},2048,afs);
 end
 linkaxes
 set(ha(end-4:end),'XTick',[0 0.4],'XTicklabels',[0 0.4])
-set(ha(1:5:75),'Ytick',[0 20],'yticklabels',[0 20])
+set(ha(1:5:70),'Ytick',[0 20],'yticklabels',[0 20])
 
 [ax2,h2]=suplabel('Frequency (kHz)','y');
 set(h2,'position',[-0.02 0.5 0])
@@ -313,9 +313,8 @@ end
 xlabel('Frequency'), ylabel('Max Exhaled Flow Rate (L/s)'), zlabel('norm PSD')
 
 
-cd '\\uni.au.dk\Users\au575532\Documents\MATLAB\BreathSounds\AnalysisFigures'
 set(gca,'view',[13.8667   57.4667])
-print('Syringe-147z-pneumon-PSD.png','-dpng')
+print([cd '\AnalysisFigures\Syringe-147z-pneumon-PSD.png'],'-dpng')
 
 % get average flow rates for each *flow level*
 for i = 1:5 
@@ -358,6 +357,13 @@ print([cd '\AnalysisFigures\Syringe_147z_LMin'],'-dpng','-r300')
 % how is sound integral affected by pneumotach?
 lm = fitlm(tbl,'Sint~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
 
+% flow values: inhale occurs first, and is +ve
+for i = 1:5
+mnflow_inh(1,i) = mean(allmxflow(i:5:end));
+mnflow_inh(2,i) = std(allmxflow(i:5:end));
+mnflow_exh(1,i) = mean(allminflow(i:5:end));
+mnflow_exh(2,i) = std(allminflow(i:5:end));
+end
 
 
 
