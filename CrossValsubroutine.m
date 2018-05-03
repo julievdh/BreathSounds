@@ -92,7 +92,7 @@ plot(VTest(1,:),[f12(:).VTe],'k^')%,'markerfacecolor','k')
 plot(VTesti(1,:),[f12(:).VTi],'kv')%,'markerfacecolor','k')
 plot([f12(:).VTest(1,:)],[f12(:).VTe],'^')
 plot([f12(:).VTesti(1,:)],[f12(:).VTi],'v')
-ylabel('Measured Volume (L)'), xlabel('Estimated volume (L)')
+ylabel('Measured Volume (L)'), xlabel('Estimated Volume (L)')
 plot([0 10],[0 10],'k:')
 text(0.5,9,'C','FontSize',16,'FontWeight','Bold')
 
@@ -113,7 +113,7 @@ pdfi = dfi./f12.VTesti(1,:);
 subplot(2,2,4), hold on 
 plot(f12.VTe,pdfe*100,'^')
 plot(f12.VTi,pdfi*100,'v')
-xlabel('measured volume (L)'), ylabel('% Difference in Estimated VT')
+xlabel('Measured Volume (L)'), ylabel('% Difference in Estimated VT')
 xlim([0 10]),text(0.5,15,'D','FontSize',16,'FontWeight','Bold')
 
 % compare variance of VT estimates 
