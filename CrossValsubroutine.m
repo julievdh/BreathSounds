@@ -53,8 +53,8 @@ plot(f12.VTerri')
 figure(3), clf 
 set(gcf,'paperpositionmode','auto')
 subplot(2,2,1), hold on 
-plot(VTest,[f12(:).VTest],'^')
-plot(VTesti,[f12(:).VTesti],'v')
+plot(VTest(1,:),[f12(:).VTest(1,:)],'^')
+plot(VTesti(1,:),[f12(:).VTesti(1,:)],'v')
 xlabel('VT Estimate - Crossed'), ylabel('VT Estimate - Own')
 plot([0 10],[0 10],'k:')
 text(0.5,9,'A','FontSize',16,'FontWeight','Bold')
@@ -62,11 +62,11 @@ text(0.5,9,'A','FontSize',16,'FontWeight','Bold')
 
 [~,pt(1),~,statt] = ttest(VTest(1,:)',f12.VTest(1,:)');
 [~,pt(2),~,statt(2)] = ttest(VTesti(1,:)',f12.VTesti(1,:)');
-% linear model here - error as a function of volume
+% linear model here - error as a function of volume?
 
 subplot(2,2,2), hold on 
-plot(f12.VTe(~isnan([f12.VTest(1,:)])),[f12.allstore(:).erroro],'^')
-plot(f12.VTi(~isnan([f12.VTest(1,:)])),[f12.allstore(:).errori]','v')
+plot(f12.VTe(~isnan([f12.VTest(1,:)])),[f12.allstore(:).erroro],'k^')
+plot(f12.VTi(~isnan([f12.VTest(1,:)])),[f12.allstore(:).errori]','kv')
 
 plot(f12.VTe,[f12.allstore2(:).erroro],'^')
 plot(f12.VTi,[f12.allstore2(:).errori],'v')
@@ -88,10 +88,10 @@ errori2(isnan(errori2)) = [];
 mean(erroro2), mean(errori2)
 
 subplot(2,2,3), hold on 
-plot(VTest,[f12(:).VTe],'k^','markerfacecolor','k')
-plot(VTesti,[f12(:).VTi],'kv','markerfacecolor','k')
-plot([f12(:).VTest],[f12(:).VTe],'^')
-plot([f12(:).VTesti],[f12(:).VTi],'v')
+plot(VTest(1,:),[f12(:).VTe],'k^')%,'markerfacecolor','k')
+plot(VTesti(1,:),[f12(:).VTi],'kv')%,'markerfacecolor','k')
+plot([f12(:).VTest(1,:)],[f12(:).VTe],'^')
+plot([f12(:).VTesti(1,:)],[f12(:).VTi],'v')
 ylabel('Measured Volume (L)'), xlabel('Estimated volume (L)')
 plot([0 10],[0 10],'k:')
 text(0.5,9,'C','FontSize',16,'FontWeight','Bold')
@@ -116,4 +116,10 @@ plot(f12.VTi,pdfi*100,'v')
 xlabel('measured volume (L)'), ylabel('% Difference in Estimated VT')
 xlim([0 10]),text(0.5,15,'D','FontSize',16,'FontWeight','Bold')
 
-print([cd '\AnalysisFigures\CrossVal_f10f12'],'-dpng','-r300')
+% compare variance of VT estimates 
+[~,pvar(1),~,statvar(1)] = vartest2(VTest(1,:),f12.VTest(1,:)-VTest(1,:));
+[~,pvar(2),~,statvar(2)] = vartest2(VTesti(1,:),f12.VTesti(1,:)-VTesti(1,:));
+
+figure, hold on 
+[ax1, ax2, ax3] = scatterhist3(f12.VTest(1,:),VTest(1,:),'^',1);
+[ax1, ax2, ax3] = scatterhist3(f12.VTesti(1,:),VTesti(1,:),'v',1);

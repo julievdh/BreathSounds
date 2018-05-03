@@ -161,8 +161,8 @@ FlowSoundAssess
 
 figure(24), clf, hold on 
 set(gcf,'paperpositionmode','auto')
-[ax1,ax2,ax3] = scatterhist3(VTest(1,:),VTest(2,:),'^'); % exhale H1 vs H2
-scatterhist3(VTesti(1,:),VTesti(2,:),'v'); % inhale H1 vs H2
+[ax1,ax2,ax3] = scatterhist3(VTest(1,:),VTest(2,:),'^',1,0.5,1); % exhale H1 vs H2
+scatterhist3(VTesti(1,:),VTesti(2,:),'v',1,0.5,1); % inhale H1 vs H2
 plot(ax1,[0 12],[0 12],'k:')
 ax3.XLim = ax1.XLim;
 
@@ -210,3 +210,13 @@ filename = strcat(DQ{f,2},'_resp');
 f12 = load([cd '\PneumoData\' filename '_flowsound.mat']); 
 
 CrossValsubroutine
+print([cd '\AnalysisFigures\CrossVal_f10f12'],'-dpng','-r300')
+
+%% apply to a different animal
+f = 6; 
+filename = strcat(DQ{f,2},'_resp');
+f12 = load([cd '\PneumoData\' filename '_flowsound.mat']); % variable still called f12, but for file 9
+
+CrossValsubroutine
+print([cd '\AnalysisFigures\CrossVal_f10f' num2str(f)],'-dpng','-r300')
+
