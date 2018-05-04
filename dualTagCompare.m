@@ -66,12 +66,13 @@ print([cd '\AnalysisFigures\' DQ2017{f(1),1} 'dualtag_within_FlowSound'], '-dsvg
 
 %% 
 figure(22), clf, hold on 
+set(gcf,'paperpositionmode','auto')
 % title('Between Tags')
 
-[ax1,ax2,ax3] = scatterhist3(tag1.VTesti(1,:),tag2.VTesti(1,:),'v'); % inhale hydrophone 1 
-scatterhist3(tag1.VTesti(2,:),tag2.VTesti(2,:),'v'); % inhale hydrophone 2
+%scatterhist3(tag1.VTesti(2,:),tag2.VTesti(2,:),'v'); % inhale hydrophone 2
 scatterhist3(tag1.VTest(1,:),tag2.VTest(1,:),'^'); % exhale hydrophone 1
-scatterhist3(tag1.VTest(2,:),tag2.VTest(2,:),'^'); % exhale hydrophone 2 
+[ax1,ax2,ax3] = scatterhist3(tag1.VTesti(1,:),tag2.VTesti(1,:),'v'); % inhale hydrophone 1 
+% scatterhist3(tag1.VTest(2,:),tag2.VTest(2,:),'^'); % exhale hydrophone 2 
 lgd = legend(ax3,'Inhale H1','Inhale H2','Exhale H1', 'Exhale H2'); 
 lgd.Position = [0.65 0.79 0.1976 0.1635];
 
