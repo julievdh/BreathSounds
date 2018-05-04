@@ -5,9 +5,10 @@ AlignData_SyringeCal
 %% 
 CH = 2; 
 for i = 1:5
-[SL_o(:,i),f] = speclev(sigstore_o{CH,i},2048,afs);
-[SL_i(:,i),f] = speclev(sigstore_i{CH,i},2048,afs);
+[SL_o(:,i),f] = speclev(sigstore(f).o{CH,i},2048,afs);
+[SL_i(:,i),f] = speclev(sigstore(f).i{CH,i},2048,afs);
 end
+%% 
 figure(4), clf
 ax1 = subplot(2,4,1:2); 
 plot(f,SL_o)

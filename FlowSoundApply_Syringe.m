@@ -86,14 +86,16 @@ tbl = table(dist3', pneum, flow',VTest(1,:)',VTesti(1,:)',...
     'VariableNames',{'Distance','Pneumo','Flow','VTesto','VTesti'});
 % fit a linear model: is the source level affected by distance or
 % pneumotach?
-lm_exh = fitlm(tbl,'VTesto~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
-lm_inh = fitlm(tbl,'VTesti~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
+lm_exh = fitlm(tbl,'VTesto~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'});%, plotSlice(lm)
+lm_inh = fitlm(tbl,'VTesti~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'});%, plotSlice(lm)
 
 figure(32), clf
-co = [0 93 154]/255;
-plotSlice(lm_exh)
-% SyringeSpecLMfig(lm_exh,co)
+co = [0    0.4470    0.7410];
+SyringeLMfig(lm_exh,co)
+co = [0.8500    0.3250    0.0980]; 
+SyringeLMfig(lm_inh,co)
 
+print([cd '\AnalysisFigures\SyringeVTest_147z'],'-dpng','-r300')
 
 return 
 
