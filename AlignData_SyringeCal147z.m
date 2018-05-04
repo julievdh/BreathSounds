@@ -321,6 +321,7 @@ for i = 1:5
 flows(i,:) = [mean(allminflow(i:5:end)) std(allminflow(i:5:end)) mean(allmxflow(i:5:end)) std(allmxflow(i:5:end))];
 end
 
+
 %% do linear model
 % some variables in table
 tbl = table(Sint1(f).out', SLlow_o',SLhigh_o',SLdiff_o',dist3',flow',pneum,...

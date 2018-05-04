@@ -85,8 +85,8 @@ VTerri(2,:) = VTesti(2,:) - VTi;
 
 plot(-minflow(pon),VTerre(1,pon),'k^')
 plot(-mxflow(pon),VTerri(1,pon),'kv')
-plot(-minflow(pon(1:5)),VTerre(1,pon(1:5)),'k^','markerfacecolor','k')
-plot(-mxflow(pon(1:5)),VTerri(1,pon(1:5)),'kv','markerfacecolor','k')
+plot(-minflow(pon(1:5)),VTerre(1,pon(1:5)),'k^','markerfacecolor','k') % the ones used for calibration
+plot(-mxflow(pon(1:5)),VTerri(1,pon(1:5)),'kv','markerfacecolor','k') % the ones used for calibration
 
 xlabel('Flow Rate (L/s)'), ylabel('Error')
 title(['Syringe ' regexprep(filename,'_','  ') ' error.png'])
