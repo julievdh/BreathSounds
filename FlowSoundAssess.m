@@ -192,13 +192,16 @@ if size(all_SUMMARYDATA,2) == 8;
 end
 VTi(VTi < 0.5) = NaN; 
 title([regexprep(tag,'_','    ') ' VTmeas-est.png'])
-plot(VTest,VTe,'^')
+plot(VTest(1,:),VTe,'^')
 
 if exist('VTi','var')
-    plot(VTesti(:,VTesti(1,:) > 0.5),VTi(1,VTesti(1,:) > 0.5),'v')
+    plot(VTesti(1,VTesti(1,:) > 0.5),VTi(1,VTesti(1,:) > 0.5),'v')
 else
-    plot(VTesti(:,VTesti(1,:) > 0.5),VTe(1,VTesti(1,:) > 0.5),'v')
+    plot(VTesti(1,VTesti(1,:) > 0.5),VTe(1,VTesti(1,:) > 0.5),'v')
 end
+plot(VTest(1,goodidx(chs)),VTe(goodidx(chs)),'k^','MarkerFaceColor','k')
+plot(VTesti(1,goodidx(chs)),VTi(goodidx(chs)),'kv','MarkerFaceColor','k')
+
 
 ylabel('Measured VT'), xlabel('Estimated VT')
 subplot(3,1,3), hold on
@@ -210,9 +213,9 @@ plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 % ylim([0 12]), % set(gca,'ytick',0:2:12)
 xlim([breath.cue(pon(1))/60-1 breath.cue(pon(end))/60+1])
 plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^')
-plot(breath.cue(pon)/60,VTest(2,~isnan(CUE_R)),'^')
+%plot(breath.cue(pon)/60,VTest(2,~isnan(CUE_R)),'^')
 plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
-plot(breath.cue(pon)/60,VTesti(2,~isnan(CUE_R)),'v')
+%plot(breath.cue(pon)/60,VTesti(2,~isnan(CUE_R)),'v')
 xlabel('Time (min)'), ylabel('Tidal Volume (L)')
 
 print([cd '/AnalysisFigures/' tag '_VTmeas-est.png'],'-dpng')
@@ -293,9 +296,12 @@ if exist('VTe','var') ~= 1
     VTe = abs(all_SUMMARYDATA(CUE_S,5))';
     VTi = abs(all_SUMMARYDATA(CUE_S,6))';
 end
-plot(VTest,VTe,'^')
-plot(VTesti,VTi,'v')
-plot([0 20],[0 20])
+plot(VTest(1,:),VTe,'^')
+plot(VTesti(1,:),VTi,'v')
+plot(VTest(1,goodidx(chs)),VTe(goodidx(chs)),'k^','MarkerFaceColor','k')
+plot(VTesti(1,goodidx(chs)),VTi(goodidx(chs)),'k^','MarkerFaceColor','k')
+
+plot([0 20],[0 20],'k')
 xlabel('Estimated VT (L)'), ylabel('Measured VT (L)')
 VTe(VTe == 0) = NaN; VTi(VTi == 0) = NaN;
 nanmean(nanmean(VTe(VTest > 0) - VTest(VTest > 0))./VTe(VTest > 0))
@@ -310,12 +316,10 @@ nanmean(nanmean(VTi(VTesti > 0) - VTesti(VTesti > 0))./VTe(VTesti > 0))
 
 %% plot spectral information and flow rate
 F = 0:117.1875:1.1989E5; % frequencies for SL calculations
-expFR = abs(all_SUMMARYDATA(CUE_S,4))'; % THESE ARENT RIGHT FOR DQ 2013
-insFR = all_SUMMARYDATA(CUE_S,3)';
 figure(88), clf, hold on
 for i = 1:length(allstore)
     if isempty(allstore(i).SL_e) == 0
-        plot3(repmat(expFR(i),1,171),F(1:171),allstore(i).SL_e(1:171))
+        plot3(repmat(mxEflow(i),1,171),F(1:171),allstore(i).SL_e(1:171))
    allstore(i).SL_e_high = mean(allstore(i).SL_e(F<3500 & F > 2500));
    allstore(i).SL_e_low = mean(allstore(i).SL_e(F<1000));
     end
@@ -324,10 +328,20 @@ end
 figure(89), clf, hold on
 for i = 1:length(allstore)
     if isempty(allstore(i).SL_i) == 0
-        plot3(repmat(insFR(i),1,171),F(1:171),allstore(i).SL_i(1:171))
+        plot3(repmat(mxIflow(i),1,171),F(1:171),allstore(i).SL_i(1:171))
     allstore(i).SL_i_high = mean(allstore(i).SL_i(F<3500 & F > 2500));
    allstore(i).SL_i_low = mean(allstore(i).SL_i(F<1000));
    
     end
+end
+
+% here for example we could calculate the frequency at which 25, 50, of
+% power reached and correlate with PEFR or PIFR 
+goodidx = find(arrayfun(@(allstore) ~isempty(allstore.Pxx_e),allstore));
+clf, hold on 
+for i = 1:length(mxEflow)
+if isempty(allstore(i).Pxx_e) == 0
+plot3(F(1:L),zeros(L,1)+mxEflow(i),allstore(i).Pxx_e(1:L)./max(allstore(i).Pxx_e(1:L)))
+end
 end
 

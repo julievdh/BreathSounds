@@ -254,5 +254,5 @@ plot([0 10],[0 10],'k:')
 ylabel('Measured Volume (L)'), xlabel('Estimated Volume (L)')
 text(0.5,9.5,'C','FontSize',16,'FontWeight','Bold')
 
-print([cd '\AnalysisFigures\CrossVal_f10f' num2str(f)],'-dpng','-r300')
+print([cd '\AnalysisFigures\CrossVal_f10f' num2str(f)],'-dsvg','-r300')
 

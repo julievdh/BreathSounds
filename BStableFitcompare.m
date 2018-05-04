@@ -79,6 +79,10 @@ for f = [9 28 10:25 27]
     subplot(224), hold on
     plot(T(ct).dist,fitinfo.b,'ko','marker',T(ct).mkr,'markerfacecolor',T(ct).col)
     
+    T(ct).a = fitinfo.a; 
+    T(ct).ai = fitinfo.ai; 
+    T(ct).b = fitinfo.b; 
+    T(ct).bi = fitinfo.bi;
     
     ct = ct+1;
     clear fitinfo
@@ -164,6 +168,10 @@ for f = 1:17
     subplot(224), hold on
     plot(T(ct).dist,fitinfo.b,'kd','markerfacecolor',T(ct).col)
     
+     T(ct).a = fitinfo.a; 
+    T(ct).ai = fitinfo.ai; 
+    T(ct).b = fitinfo.b; 
+    T(ct).bi = fitinfo.bi;
     end
     
     ct = ct+1;
@@ -240,7 +248,15 @@ if exist('fitinfo','var')
     subplot(414), hold on
     plot(ct,fitinfo.b,'k>','markerfacecolor',T(ct).col)
     
+    T(ct).a = fitinfo.a; 
+    T(ct).ai = fitinfo.ai; 
+    T(ct).b = fitinfo.b; 
+    T(ct).bi = fitinfo.bi; 
+    
+    
 end
+
+print([cd '\AnalysisFigures\FitParameters_All'],'-dpng','-r300')
 
 ct = ct+1;
 clear fitinfo
@@ -270,3 +286,10 @@ return
 [mean([T(1:36).errori_othr]) std([T(1:36).errori_othr])]
 [nanmean([T(1:36).VTerre_othr]) nanstd([T(1:36).VTerre_othr])]
 [nanmean([T(1:36).VTerri_othr]) nanstd([T(1:36).VTerri_othr])]
+
+%% do some tests - do the parameters for the sarasota animal fit with the others?
+
+[h,p] = ttest2(T(37).a,[T(1:36).a]);
+[h,p] = ttest2(T(37).ai,[T(1:36).ai]);
+[h,p] = ttest2(T(37).b,[T(1:36).b]);
+[h,p] = ttest2(T(37).bi,[T(1:36).bi]);

@@ -109,7 +109,7 @@ figure(29), clf
 hold on
 for n = 1:length(q)
     plot(breath.cue(q(n))/60,surfstore(n).VTesti,'kv','markerfacecolor',[0.5 0.5 0.5])
-    plot(breath.cue(q(n))/60,surfstore(n).VTesto,'k^')
+    % plot(breath.cue(q(n))/60,surfstore(n).VTesto,'k^')
 end
 
 % get swimming values and fill in NaN when quality is not good
@@ -123,6 +123,8 @@ end
 
 plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
 VTi_swim(NA) = nanmean(VTi_swim);
+
+return 
 
 %% what about Quality = 0 when no Pneumotach?
 q0 = find(Quality == 0);
