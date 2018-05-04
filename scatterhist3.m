@@ -1,4 +1,4 @@
-function [ax1, ax2, ax3] = scatterhist3(x,y,marker,square,kernel)
+function [ax1, ax2, ax3] = scatterhist3(x,y,marker,square,kernel,kernela)
 % [ax1, ax2, ax3] = scatterhist3(x,y,marker,kernel)
 % make scatterhist but with control over each of the panels and allowed to
 % overlap, etc
@@ -18,6 +18,10 @@ end
 if nargin < 5
     kernel = 0.5;
 end
+if nargin < 6
+    kernela = 0;
+end
+
 
 % reshape any inputs
 if size(y,1) < size(y,2)
@@ -41,11 +45,18 @@ end
 
 %% side: densities of x and y
 ax2 = subplot('position',[0.65 0.1 0.15 0.6]); hold on
+idx = floor(min(x))-1:0.1:ceil(max(x))+1; % range for kernel estimation
+idy = 0:0.1:ceil(max(y))+1; % floor(min(y))-1:0.1:ceil works too
+
+if kernela == 1 % if you want to adapt the kernel size based on the range of the inputs
+    fktr = (max(idy)-min(idy))/(max(idx)-min(idx)); % factor of difference between the two
+pd_x = fitdist(x,'Kernel','Bandwidth',kernel);
+pd_y = fitdist(y,'Kernel','Bandwidth',kernel*fktr);   
+else
 pd_x = fitdist(x,'Kernel','Bandwidth',kernel);
 pd_y = fitdist(y,'Kernel','Bandwidth',kernel);
+end 
 
-idx = floor(min(x))-1:0.1:ceil(max(x))+1; % range for kernel estimation
-idy = floor(min(y))-1:0.1:ceil(max(y))+1;
 
 xhat = pdf(pd_x,idx);
 yhat = pdf(pd_y,idy);
