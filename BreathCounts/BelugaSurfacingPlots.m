@@ -30,3 +30,4 @@ text(0.6*h2.XLim(2),0.75*h2.YLim(2),['median: ' num2str(median(resph(:,2)))])
 text(0.6*h2.XLim(2),0.7*h2.YLim(2),['mean: ' num2str(mean(surf(:,2)))])
 text(0.6*h2.XLim(2),0.65*h2.YLim(2),['median: ' num2str(median(surf(:,2)))])
 
+print([cd '\BreathCounts\RespSurfDistribution_' 'tag'],'-dpng','-r300')
