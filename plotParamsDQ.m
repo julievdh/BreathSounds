@@ -4,27 +4,25 @@ exp(:,3) = exp(:,2)-exp(:,1);
 
 figure(3), clf
 pon = CUE_R(~isnan(CUE_R)); % all of the breaths where have pneumotach on
-subplot(3,1,1:2), hold on
-plot(breath.cue(pon,1),exp(pon,3),'.')
-plot(breath.cue(pon,1),ins(pon,3),'.')
-plot(breath.cue(:,1),exp(:,3),'^')
-plot(breath.cue(:,1),ins(:,3),'v')
+ax(1) = subplot(3,1,1:2); hold on
+plot(breath.cue(pon,1)/60,exp(pon,3),'.')
+plot(breath.cue(pon,1)/60,ins(pon,3),'.')
+plot(breath.cue(:,1)/60,exp(:,3),'^')
+plot(breath.cue(:,1)/60,ins(:,3),'v')
 
 xlabel('Time (sec)'), ylabel('Duration (sec)')
 
-subplot(3,1,3), hold on 
-for n = 1:length(CUE_R)
-    if isnan(CUE_R(n)) == 0
-plot(breath.cue(CUE_R(n),1),VTesti(n),'kv')
-plot(breath.cue(CUE_R(n),1),VTe(n),'k.')
-plot(breath.cue(CUE_R(n),1),VTi(n),'r.')
-    end
-end
+ax(2) = subplot(3,1,3); hold on 
+plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
+plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
+% plot volumes
+plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
+
 q = find(Quality == 20);
-plot(breath.cue(q,1),extractfield(surfstore,'VTesti'),'bv')
+plot(breath.cue(q,1)/60,extractfield(surfstore,'VTesti'),'bv')
 
 q = find(Quality == 0);
-plot(breath.cue(q,1),extractfield(surfstore,'VTesti'),'bv')
+plot(breath.cue(q,1)/60,extractfield(surfstore,'VTesti'),'bv')
 
 ylabel('Estimated VT (L)'), xlabel('Time (sec)')
 
