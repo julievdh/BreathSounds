@@ -18,16 +18,18 @@ plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 % plot volumes
 plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
 
-q = find(Quality == 20);
-plot(breath.cue(q,1)/60,extractfield(surfstore,'VTesti'),'bv')
+q20 = find(Quality == 20);
+plot(breath.cue(q20,1)/60,extractfield(surfstore,'VTesti'),'bv')
 
-q = find(Quality == 0);
-plot(breath.cue(q,1)/60,extractfield(surfstore,'VTesti'),'bv')
+q0 = find(Quality == 0);
+lia = ismember(q0,pon);
+q = q0(lia == 0);
+plot(breath.cue(q,1)/60,extractfield(reststore,'VTesti'),'bv')
 
 ylabel('Estimated VT (L)'), xlabel('Time (sec)')
 
 %% 
-clf, hold on
+figure(13), clf, hold on
 h = histogram(VTi,'binwidth',0.5,'normalization','count'); % all measured
 h.FaceAlpha = 0.2; 
 h = histogram(horzcat(VTesti(1,:),[reststore(:).VTesti],[surfstore(:).VTesti]),'binwidth',0.5,'normalization','count'); % all total estimated

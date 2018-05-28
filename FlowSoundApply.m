@@ -124,7 +124,6 @@ end
 plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
 VTi_swim(NA) = nanmean(VTi_swim);
 
-return 
 
 %% what about Quality = 0 when no Pneumotach?
 q0 = find(Quality == 0);
@@ -133,8 +132,8 @@ q = q0(lia == 0);
 % q = [1:2 77:82]; % good quality when no pneumotach, so resting, should be similar
 for n = 1:length(q);
     sub = []; H = [];
-    [s,afs] = d3wavread([breath.cue(q(n),1)-0.2 breath.cue(q(n),1)+breath.cue(q(n),2)+0.5],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
-    
+    [s,afs] = d3wavread([breath.cue(q(n),1)-0.4 breath.cue(q(n),1)+breath.cue(q(n),2)+0.6],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
+        
     s = s(:,1)-mean(s(:,1)); % channel 1 minus DC offset
     H = hilbenv(s); % take hilbert
     y = resample(H,1,dr)-mean(H(1:12000)); % resample hilbert envelope of sound to be same sampling frequency as pneumotach
