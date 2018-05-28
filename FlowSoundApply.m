@@ -56,10 +56,10 @@ for n = 1:length(q) % 1:length(q);
         surfstore(n).sfillo = naninterp(surfstore(n).soundo);                   % interpolate NaNs
         surfstore(n).sfillo(find(surfstore(n).sfillo<0)) = 0;                           % zero out any negative values at the beginning
         surfstore(n).sfillo(find(surfstore(n).sfillo>max(surfstore(n).soundo))) = NaN;    % interpolation should never exceed max envelope
-        
+    else surfstore(n).sfillo = NaN;
     end
 end
-
+%%
 for n = 1:length(surfstore)
     % estimate flow from sound - inhale
     surfstore(n).Festi = ai*(surfstore(n).sfilli).^bi;
