@@ -189,6 +189,9 @@ end
 for n = 1:length(reststore)
     reststore(n).Festi = ai*(reststore(n).E).^bi; % do it on the filtered envelope with the bad bits removed
     reststore(n).VTesti = trapz(reststore(n).Festi)/newfs;
+    if reststore(n).VTesti < 1
+        reststore(n).VTesti = NaN; 
+    end
     reststore(n).Festo = a*(reststore(n).sfillo).^b;
     reststore(n).VTesto = trapz(reststore(n).Festo)/(afs/dr);
 end
