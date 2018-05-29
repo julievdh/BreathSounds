@@ -39,6 +39,7 @@ figure(38), clf, hold on
 plot(breath.cue(pon)/60,VTb(pon),'o-','color',[0.75 0.75 0.75])
 
 % when free-swimming
+q = find(Quality == 20);
 plot(breath.cue(q)/60,VTb(q),'o-','color',[0.75 0.75 0.75])
 
 plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
@@ -71,12 +72,15 @@ VTest = VTest(1,:); VTesti = VTesti(1,:);
 VTest(find(isnan(VTest))) = nanmean([VTest,VTesti]);
 VTesti(find(isnan(VTesti))) = nanmean([VTest,VTesti]);
 
+q = find(Quality == 20); 
+
 VTestall(:,1) = vertcat(breath.cue(pon,1),breath.cue(q,1)); % time of breath
 surfVT = extractfield(surfstore,'VTesti'); % all surf values
 surfVT(isnan(surfVT)) = nanmean(surfVT); 
 VTestall(:,2) = vertcat(VTest(~isnan(CUE_R))',nan(length(surfVT),1)); % exhaled VT estimate
 VTestall(:,3) = vertcat(VTesti(~isnan(CUE_R))',surfVT'); 
 VTestall = sortrows(VTestall,1); % sort by breath cue
+% check: plot(VTestall(:,1),VTestall(:,3))
 
 plot(breath.cue(pon,1),cumsum(VTest(~isnan(CUE_R))),'.-','color',[0    0.4470    0.7410])
 plot(breath.cue(pon,1),cumsum(VTesti(~isnan(CUE_R))),'.-','color',[0.8500    0.3250    0.0980])
@@ -97,22 +101,50 @@ diff_em_bin = max(cumsum(VTesti)) - max(cumsum(VTb(pon)));
 
 %% calculate minute ventilation
 % when stationed
-iRR = 60./diff(breath.cue(pon,1)); % instantaneous respiratory rate
-iVe_me = iRR.*real(VTe(~isnan(CUE_R(2:end))))'; % instantaneous VE measured exhale
-iVe_mi = iRR.*real(VTi(~isnan(CUE_R(2:end))))'; % instantaneous VE measured inhale
-iVe_ee = iRR.*real(VTest(~isnan(CUE_R(2:end))))'; % instantaneous VE measured inhale
-iVe_ei = iRR.*real(VTesti(~isnan(CUE_R(2:end))))'; % instantaneous VE measured inhale
+iRR = 60./diff(breath.cue(pon,1)); % instantaneous respiratory rate, 
+rVTe = real(VTe(~isnan(CUE_R)))'; 
+rVTi = real(VTi(~isnan(CUE_R)))';
+rVTest = real(VTest(~isnan(CUE_R)))';
+rVTesti = real(VTest(~isnan(CUE_R)))';
+iVe_me = iRR.*rVTe(2:end); % instantaneous VE measured exhale
+iVe_mi = iRR.*rVTi(2:end); % instantaneous VE measured inhale
+iVe_ee = iRR.*rVTest(2:end); % instantaneous VE estimated exhale
+iVe_ei = iRR.*rVTesti(2:end); % instantaneous VE estimated inhale
 iVe_const = iRR*0.6*TLC; % 0.6*TLC; 
 
-% resample to even grid
+%% plot VT versus resp rate
+figure(4), clf, hold on
+iRR = 60./diff(VTestall(:,1)); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% did this again for all breaths
+iV_ei = iRR.*VTestall(2:end,3);
+plot(VTestall(2:end,3),iRR,'o-')
+xlabel('Tidal Volume (L)')
+ylabel('Frequency (breaths/min)')
+
+% add contours of minute ventilation
+VTrange = 0:0.5:16;
+% range of breaths/min
+frange = 0:1:30;
+xlim([min(VTrange) max(VTrange)])
+
+VEcontour(:,1) = repmat(10,1,length(frange))./frange;
+VEcontour(:,2) = repmat(30,1,length(frange))./frange; 
+VEcontour(:,3) = repmat(50,1,length(frange))./frange; 
+VEcontour(:,4) = repmat(70,1,length(frange))./frange;
+VEcontour(:,5) = repmat(90,1,length(frange))./frange; 
+VEcontour(:,6) = repmat(110,1,length(frange))./frange; 
+
+
+plot(VEcontour,frange,'color',[0.75 0.75 0.75])
+
+return 
+%% resample to even grid
 [Ve_c,TVe] = resample(iVe_const,breath.cue(pon(2:end),1)/60,2); % 30s intervals
-Ve_me = resample(iVe_me,breath.cue(pon(2:eclf'; % instantaneous VE
-iVe_const = iRR*0.6*TLC; % 0.6*TLC; 
+Ve_me = resample(iVe_me,breath.cue(pon(2:end))'); % instantaneous VE
 
+% q = find(Quality == 20); 
 % resample to even grid
 [Ve_c,TVe_c] = resample(iVe_const,breath.cue(q(2:end),1)/60,2); % 30s intervals
 [Ve,TVe] = resample(iVe_me,breath.cue(q(2:end),1)/60,2); % so this is at 30s intervals
-
 
 figure(39), clf, hold on 
 allb = sort(vertcat(q,pon)); 

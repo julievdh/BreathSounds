@@ -79,4 +79,12 @@ print([cd '\AnalysisFigures\VTdist_' tag],'-dpng','-r300')
 
 % plot([nanmean(VTi) nanmean(VTi)],[0 1],'k','linewidth',2)
 
-%% 
+%% plot VT vs duration through time? 
+
+% make a matrix of breath cues and VT estimates and durations
+VTesti_all = [breath.cue(pon)/60 VTesti(1,~isnan(CUE_R))' ins(pon,3); 
+    breath.cue(q20)/60 VTi_swim' ins(q20,3); 
+    breath.cue(q)/60 extractfield(reststore,'VTesti')' ins(q,3)]; % all together
+% sort 
+[~,idx] = sort(VTesti_all(:,1)); % sort just the first column
+VTesti_allsorted = VTesti_all(idx,:);   % sort the whole matrix using the sort indices

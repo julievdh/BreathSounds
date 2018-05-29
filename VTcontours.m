@@ -25,3 +25,4 @@ plot(VTcontour10,frange,'color',[0.75 0.75 0.75])
 xlabel('Duration (s)'), ylabel('Mean flow rate (L/s)')
 h = colorbar; 
 ylabel(h,'VT estimate error (L)')
+
