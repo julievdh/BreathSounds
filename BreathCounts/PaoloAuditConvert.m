@@ -2,7 +2,7 @@
 clear 
 % convert .csv files from Paolo to tag audits
 % load csv 
-tag = 'er160505-22';
+tag = 'bp170907-41b';
 fs = 10; 
 
 ftoread = strcat('c:/tag/audit/',tag,'prh10_breaths.csv');
