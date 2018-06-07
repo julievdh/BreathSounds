@@ -31,3 +31,26 @@ text(0.6*h2.XLim(2),0.7*h2.YLim(2),['mean: ' num2str(mean(surf(:,2)))])
 text(0.6*h2.XLim(2),0.65*h2.YLim(2),['median: ' num2str(median(surf(:,2)))])
 
 print([cd '\BreathCounts\RespSurfDistribution_' 'tag'],'-dpng','-r300')
+
+%% requested from Manolo: interval between midpoints of consecutive surfacings
+
+tags = {'dl16_135a'}; 
+for k = 1:length(tags)
+% load audit
+tag = tags{k}; 
+R = loadaudit(tag);
+
+% find resph or surf 
+[cues,R] = findbreathcues(R); 
+
+% calculate midpoints
+mdpt = cues(:,1)+cues(:,2)/2; 
+
+% calculate interval between midpoints 
+intrvl = diff(mdpt); 
+
+% plot
+figure(3), subplot(k,2,k)
+histogram(intrvl)
+
+end
