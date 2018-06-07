@@ -58,6 +58,7 @@ print([cd '\BreathCounts\RespSurfDistribution_' tag],'-dpng','-r300')
 figure(3), set(gcf,'position',[2.4883    0.0457    1.2527    0.4200]*1E3)
 h2 = subplot(2,4,k);
 histogram(intrvl,0:10:400)
+xlabel('Interval (s)') % interval between all surfacings/breaths
 title(regexprep(tag,'_','  '))
 text(0.5*h2.XLim(2),0.8*h2.YLim(2),['mean: ' sprintf('%1.2f',mean(intrvl))])
 text(0.5*h2.XLim(2),0.65*h2.YLim(2),['median: ' sprintf('%1.2f',median(intrvl))])
@@ -66,6 +67,7 @@ figure(4), set(gcf,'position',[2.4883    0.0457    1.2527    0.4200]*1E3)
 h2 = subplot(2,4,k); hold on
 %histogram(resph(:,2),0:0.5:10)
 histogram(allsrf(:,2),0:0.5:10)
+xlabel('Duration (s)')
 title(regexprep(tag,'_','  '))
 text(0.5*h2.XLim(2),0.8*h2.YLim(2),['mean: ' sprintf('%1.2f',mean(allsrf(:,2)))])
 text(0.5*h2.XLim(2),0.65*h2.YLim(2),['median: ' sprintf('%1.2f',median(allsrf(:,2)))])
