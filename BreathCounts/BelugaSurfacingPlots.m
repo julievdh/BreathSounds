@@ -34,7 +34,8 @@ print([cd '\BreathCounts\RespSurfDistribution_' 'tag'],'-dpng','-r300')
 
 %% requested from Manolo: interval between midpoints of consecutive surfacings
 
-tags = {'dl16_135a'}; 
+tags = {'dl16_133a','dl16_134a','dl16_135a','dl16_136a','dl16_138a',...
+    'dl14_237a','dl14_238a','dl14_240a'}; 
 for k = 1:length(tags)
 % load audit
 tag = tags{k}; 
@@ -50,7 +51,8 @@ mdpt = cues(:,1)+cues(:,2)/2;
 intrvl = diff(mdpt); 
 
 % plot
-figure(3), subplot(k,2,k)
-histogram(intrvl)
+figure(3), subplot(2,4,k)
+histogram(intrvl,0:10:400)
+title(regexprep(tag,'_','  '))
 
 end
