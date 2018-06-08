@@ -16,10 +16,15 @@ end
 % count good ones - using first 5 based on previous analysis
 
 goodidx = find(arrayfun(@(allstore) ~isempty(allstore.sound),allstore));
-chs = 1:5; % randi([1 length(goodidx)],1,5); % choose 5 random
+chs =  randi([1 length(goodidx)],1,5); % choose 5 random
 substore = allstore(goodidx(chs)); % take up to the 5th one
 %goodidx = find(arrayfun(@(allstore) ~isempty(allstore.sound),allstore));
 %substore = allstore(1:goodidx(5)); % take up to the 5th one
+
+%% test - apply median filter to sound
+for i = 1:length(allstore)
+    allstore(i).sound = medfilt1(allstore(i).sound,4); 
+end
 
 
 %% use relationship on sounds
@@ -43,7 +48,7 @@ fitinfo.a = a; fitinfo.b = b; fitinfo.curve = curve; fitinfo.gof = goodness;
 
 save([cd '\PneumoData\' filename '_flowsound'],'fitinfo','-append')
 %% Fest = a*log10(shift_y)+b;
-figure(9), clf, subplot(121), hold on
+figure(9), clf, subplot(1,2,1), hold on
 plot(extractfield(allstore,'sound'),extractfield(allstore,'flow'),'o')
 plot(curve), legend off
 plot(allsound(exhflow),allflow(exhflow),'.')

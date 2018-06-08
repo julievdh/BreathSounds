@@ -1,3 +1,5 @@
+% can load in processed data for tt126b:
+% load('6May2014_water_tt126b_FB142_resp_surfstore.mat')
 q = find(Quality == 20);
 tic
 for n = 1:length(q) % 1:length(q);
@@ -9,6 +11,7 @@ for n = 1:length(q) % 1:length(q);
     s = s(:,CH)-mean(s(:,CH)); % channel selection minus DC offset
     [~,~,~,s_a] = CleanSpectra_fun(s,afs,[breath.cue(q(n),1)-0.4 breath.cue(q(n),2)+0.4+0.6]);
     % s_a(s_a == 0) = NaN;        % clean signal based on kurtosis and NaN out zeros
+
     
     H = hilbenv(s_a); % take hilbert
     y = resample(H,1,dr)-mean(H(1:12000)); % resample hilbert envelope of sound to be same sampling frequency as pneumotach
@@ -84,7 +87,7 @@ for n = 1:length(surfstore)
 %     end
 end
 toc 
-
+%% 
 figure(4), clf, hold on
 allflow = extractfield(allstore,'flow')';
 allsound = extractfield(allstore,'sound')';
@@ -105,7 +108,7 @@ plot(extractfield(surfstore,'sfilli'),extractfield(surfstore,'Festi'),'.')
 %     end
 % end
 
-figure(29), clf
+figure(29), % clf
 hold on
 for n = 1:length(q)
     plot(breath.cue(q(n))/60,surfstore(n).VTesti,'kv','markerfacecolor',[0.5 0.5 0.5])
@@ -204,4 +207,4 @@ plot(breath.cue(q,1)/60,extractfield(reststore,'VTesti'),'v')
 plot(breath.cue(q,1)/60,extractfield(reststore,'VTesto'),'^')
 
 % save data
-save([cd '\PneumoData\' filename '_surfstore'],'surfstore','reststore')
+save([cd '\PneumoData\' filename '_surfstore'],'surfstore','reststore','-append')
