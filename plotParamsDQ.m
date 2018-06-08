@@ -67,17 +67,20 @@ print([cd '\AnalysisFigures\VTdur_timeseries_' tag],'-dpng','-r300')
 %% 
 figure(13), clf, hold on
 h = histogram(VTi,'binwidth',0.5,'normalization','count'); % all measured
-h.FaceAlpha = 0.3; 
+h.EdgeColor = 'k'; h.FaceAlpha = 0; 
 %h = histogram(horzcat(VTesti(1,:),[reststore(:).VTesti],[surfstore(:).VTesti]),'binwidth',0.5,'normalization','count'); % all total estimated
 %h.FaceAlpha = 0.2; 
 h = histogram(VTesti(1,:),'binwidth',0.5,'normalization','count');
-h.FaceAlpha = 0.3;
+h.EdgeColor = [0.8500    0.3250    0.0980]; h.FaceAlpha = 0.5;
 h = histogram([surfstore(:).VTesti],'binwidth',0.5,'normalization','count'); 
-h.FaceAlpha = 0.3;
-histogram([reststore(:).VTesti],'binwidth',0.5,'normalization','count')
-ylim([0 10])
+h.FaceColor = 'k'; h.FaceAlpha = 0.3;
+h = histogram([reststore(:).VTesti],'binwidth',0.5,'normalization','count')
+h.FaceColor = [0.8500    0.3250    0.0980]; 
+ylim([0 10]), xlim([0 TLC])
 xlabel('Inhaled Volume (L)'), adjustfigurefont
 legend('Measured - Rest, On','Estimated - Rest, On','Estimated - Swimming','Estimated - Rest, Off')
+set(gca,'view',[90 -90])
+
 print([cd '\AnalysisFigures\VTdist_' tag],'-dpng','-r300')
 % [mean([reststore(:).VTesti]) std([reststore(:).VTesti])]
 
