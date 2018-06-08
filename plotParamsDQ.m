@@ -3,8 +3,9 @@ ins(:,3) = ins(:,2)-ins(:,1);
 exp(:,3) = exp(:,2)-exp(:,1);
 
 figure(3), clf
+set(gcf,'position',[86.3333  136.3333  880.6667  420],'paperpositionmode','auto')
 pon = CUE_R(~isnan(CUE_R)); % all of the breaths where have pneumotach on
-ax(1) = subplot(2,1,1); hold on
+ax(1) = subplot('position',[0.100    0.6173    0.65    0.3077]); hold on
 %plot(breath.cue(pon,1)/60,exp(pon,3),'.')
 %plot(breath.cue(pon,1)/60,ins(pon,3),'.')
 plot(breath.cue(:,1)/60,exp(:,3),'^','color',[0    0.4470    0.7410])
@@ -18,7 +19,7 @@ xlabel('Time (sec)'), ylabel('Duration (sec)')
 % [nanmean(exp(pon(1:12),3)) nanstd(exp(pon(1:12),3))]
 % [nanmean(ins(pon(1:12),3)) nanstd(ins(pon(1:12),3))]
 
-ax(2) = subplot(2,1,2); hold on 
+ax(2) = subplot('position',[0.100    0.1187    0.650    0.3324]); hold on 
 % plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
 plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 % plot volumes
@@ -65,7 +66,8 @@ print([cd '\AnalysisFigures\VTdur_timeseries_' tag],'-dpng','-r300')
 
 
 %% 
-figure(13), clf, hold on
+% figure(13), clf, hold on
+ax(3) = subplot('position',[0.830    0.1187    0.15    0.3324]); hold on
 h = histogram(VTi,'binwidth',0.5,'normalization','count'); % all measured
 h.EdgeColor = 'k'; h.FaceAlpha = 0; 
 %h = histogram(horzcat(VTesti(1,:),[reststore(:).VTesti],[surfstore(:).VTesti]),'binwidth',0.5,'normalization','count'); % all total estimated
@@ -74,11 +76,12 @@ h = histogram(VTesti(1,:),'binwidth',0.5,'normalization','count');
 h.EdgeColor = [0.8500    0.3250    0.0980]; h.FaceAlpha = 0.5;
 h = histogram([surfstore(:).VTesti],'binwidth',0.5,'normalization','count'); 
 h.FaceColor = 'k'; h.FaceAlpha = 0.3;
-h = histogram([reststore(:).VTesti],'binwidth',0.5,'normalization','count')
+h = histogram([reststore(:).VTesti],'binwidth',0.5,'normalization','count');
 h.FaceColor = [0.8500    0.3250    0.0980]; 
-ylim([0 10]), xlim([0 TLC])
-xlabel('Inhaled Volume (L)'), adjustfigurefont
-legend('Measured - Rest, On','Estimated - Rest, On','Estimated - Swimming','Estimated - Rest, Off')
+ylim([0 10]), xlim([0 TLC]), plot([TLC TLC],[0 10],'k')
+% xlabel('Inhaled Volume (L)'), 
+adjustfigurefont
+% legend('Measured - Rest, On','Estimated - Rest, On','Estimated - Swimming','Estimated - Rest, Off')
 set(gca,'view',[90 -90])
 
 print([cd '\AnalysisFigures\VTdist_' tag],'-dpng','-r300')
