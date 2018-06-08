@@ -20,4 +20,7 @@ end
 if strfind(filename,'Liko') >= 1
     mass = 167; 
 end
+if strfind(filename,'FB142') >= 1
+    mass = 291; 
+end
 
