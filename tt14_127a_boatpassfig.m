@@ -45,7 +45,7 @@ linkaxes
 
 print([tag '_boatpass_breaths'], '-dpng', '-r300')
 
-% and find bs within VTi_swim matrix
+%% and find bs within VTi_swim matrix
 load(strcat('C:/tag/tagdata/',tag,'_PQ'))
 load([cd '\PneumoData\6May2014_water_tt126b_FB142_resp_surfstore'])
 q = find(Quality == 20);
@@ -83,7 +83,7 @@ print([cd '\AnalysisFigures\' tag 'depthVT_min1'],'-dpng','-r300')
 
 %% breaths with pneumotach and after release depth 
 figure(43), clf, hold on 
-set(gcf,'position',1E3[2.1817   -0.2237    0.8473    0.3347],'paperpositionmode','auto')
+set(gcf,'position',1E3*[0.0083    0.1823    1.2640    0.4353],'paperpositionmode','auto')
 plot(t,-p,'Linewidth',1,'color','k')
 xlim([20 53])
 % tt126b_depth_VTest.fig 
@@ -96,7 +96,10 @@ plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v','color',[0.8500    0.3250    0.0980])
 
 plot(breath.cue(q)/60,VTi_swim,'kv','markerfacecolor',[0.5 0.5 0.5]) % swimming
-
+text(18.5,0,'Inhaled Tidal Volume (L)','rotation',90,'FontSize',11)
+text(18.5,-6,'Depth (m)','rotation',90,'FontSize',11)
+xlabel('Time (min)')
+adjustfigurefont 
 print([cd '\AnalysisFigures\' tag 'depthVT_release'],'-dpng','-r300')
 
 % some numbers
@@ -118,12 +121,19 @@ plot(breath.cue(pon)/3600,VTi(~isnan(CUE_R)),'k.','markersize',10)
 %plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^','color',[0    0.4470    0.7410]) % estimated
 plot(breath.cue(pon)/3600,VTesti(1,~isnan(CUE_R)),'v','color',[0.8500    0.3250    0.0980])
 
+text(-0.04,0.5,'Inhaled Tidal Volume (L)','rotation',90,'FontSize',11)
+text(-0.04,-6,'Depth (m)','rotation',90,'FontSize',11)
+
 ylim([-10 8])
 xlim([20 610]/60)
+xlabel('Time (hours)')
+adjustfigurefont
 
 print([cd '\AnalysisFigures\' tag 'depthVT_full'],'-dpng','-r300')
 
 return 
+%% 
+
 % calculate instantaneous breath rate
 plot(TVe+0.25,Ve_i,'.-','color','k')
 plot(TVe+0.25,Ve_MN,'.-','color',[0.5 0.5 0.5])

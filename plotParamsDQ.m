@@ -12,7 +12,7 @@ plot(breath.cue(:,1)/60,exp(:,3),'^','color',[0    0.4470    0.7410])
 plot(breath.cue(q,1)/60,exp(q,3),'^','color',[0    0.4470    0.7410],'markerfacecolor',[0    0.4470    0.7410])
 plot(breath.cue(:,1)/60,ins(:,3),'v','color',[0.8500    0.3250    0.0980])
 plot(breath.cue(q,1)/60,ins(q,3),'v','color',[0.8500    0.3250    0.0980],'markerfacecolor',[0.8500    0.3250    0.0980])
-
+xlim([round((breath.cue(1,1)/60)*.9) round((breath.cue(end,1)/60)*1.05)])
 
 xlabel('Time (min)'), ylabel('Duration (sec)')
 % values for ONR report (tt13_269b)
@@ -59,6 +59,7 @@ mass = assignmass(filename);
 TLC = 0.135*mass^0.92; % estimate from Kooyman 1973
 plot(ax(2).XLim,[TLC TLC],'k'), text(ax(2).XLim(2),TLC,{'TLC = ',sprintf('%1.2f',TLC)})
 ylim([0 TLC])
+xlim([round((breath.cue(1,1)/60)*.9) round((breath.cue(end,1)/60)*1.05)])
 
 ylabel('Estimated VT (L)'), xlabel('Time (min)'), adjustfigurefont
 set(gcf,'paperpositionmode','auto')
@@ -78,7 +79,8 @@ h = histogram([surfstore(:).VTesti],'binwidth',0.5,'normalization','count');
 h.FaceColor = 'k'; h.FaceAlpha = 0.3;
 h = histogram([reststore(:).VTesti],'binwidth',0.5,'normalization','count');
 h.FaceColor = [0.8500    0.3250    0.0980]; 
-ylim([0 10]), xlim([0 TLC]), plot([TLC TLC],[0 10],'k')
+% ylim([0 10]), 
+xlim([0 TLC]), plot([TLC TLC],[0 10],'k')
 % xlabel('Inhaled Volume (L)'), 
 adjustfigurefont, ylabel('Count')
 % legend('Measured - Rest, On','Estimated - Rest, On','Estimated - Swimming','Estimated - Rest, Off')
