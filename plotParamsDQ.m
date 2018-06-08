@@ -4,18 +4,21 @@ exp(:,3) = exp(:,2)-exp(:,1);
 
 figure(3), clf
 pon = CUE_R(~isnan(CUE_R)); % all of the breaths where have pneumotach on
-ax(1) = subplot(3,1,1:2); hold on
+ax(1) = subplot(2,1,1); hold on
 %plot(breath.cue(pon,1)/60,exp(pon,3),'.')
 %plot(breath.cue(pon,1)/60,ins(pon,3),'.')
-plot(breath.cue(:,1)/60,exp(:,3),'^')
-plot(breath.cue(:,1)/60,ins(:,3),'v')
+plot(breath.cue(:,1)/60,exp(:,3),'^','color',[0    0.4470    0.7410])
+plot(breath.cue(q,1)/60,exp(q,3),'^','color',[0    0.4470    0.7410],'markerfacecolor',[0    0.4470    0.7410])
+plot(breath.cue(:,1)/60,ins(:,3),'v','color',[0.8500    0.3250    0.0980])
+plot(breath.cue(q,1)/60,ins(q,3),'v','color',[0.8500    0.3250    0.0980],'markerfacecolor',[0.8500    0.3250    0.0980])
+
 
 xlabel('Time (sec)'), ylabel('Duration (sec)')
 % values for ONR report (tt13_269b)
 % [nanmean(exp(pon(1:12),3)) nanstd(exp(pon(1:12),3))]
 % [nanmean(ins(pon(1:12),3)) nanstd(ins(pon(1:12),3))]
 
-ax(2) = subplot(3,1,3); hold on 
+ax(2) = subplot(2,1,2); hold on 
 % plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
 plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 % plot volumes
@@ -49,10 +52,11 @@ plot(breath.cue(q20(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','marke
 q0 = find(Quality == 0);
 lia = ismember(q0,pon);
 q = q0(lia == 0);
-plot(breath.cue(q,1)/60,extractfield(reststore,'VTesti'),'v','color',[0.8500    0.3250    0.0980])
+plot(breath.cue(q,1)/60,extractfield(reststore,'VTesti'),'v','color',[0.8500    0.3250    0.0980],'markerfacecolor',[0.8500    0.3250    0.0980])
 
 mass = assignmass(filename);
 TLC = 0.135*mass^0.92; % estimate from Kooyman 1973
+plot(ax(2).XLim,[TLC TLC],'k'), text(ax(2).XLim(2),TLC,{'TLC = ',sprintf('%1.2f',TLC)})
 ylim([0 TLC])
 
 ylabel('Estimated VT (L)'), xlabel('Time (sec)'), adjustfigurefont
