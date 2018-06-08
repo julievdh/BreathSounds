@@ -87,11 +87,11 @@ print([cd '\BreathCounts\RespSurfDuration_all'],'-dpng','-r300')
 %% for 2016 tags with good depth 
 tags = {'dl16_133a','dl16_134a','dl16_135a','dl16_136a','dl16_138a'}; 
 
-for k = 1:length(tags)
+for k = 4:length(tags)
     tag = tags{k};
 % load prh
-loadprh(tag)
-p = correctdepth(p,fs); 
+loadprh(tag,'p','fs')
+% p = correctdepth(p,fs); 
 
 %figure(10); clf, hold on; warning off
 %t = (1:length(p))/fs;   % time in seconds
