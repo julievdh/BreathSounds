@@ -26,7 +26,6 @@ for i = 1:length(allstore)
     allstore(i).sound = medfilt1(allstore(i).sound,4); 
 end
 
-
 %% use relationship on sounds
 % load([filename '_flowsound'])
 allflow = extractfield(substore,'flow')';
@@ -113,7 +112,7 @@ for n = 1:length(CUE_R)
         % estimate flow from sound
         allstore(n).Fest = a*(allstore(n).sfill).^b;
         % calculate error
-        allstore(n).erroro = (mean(allstore(n).Fest(ex))-mean(allstore(n).flow(ex)));
+        allstore(n).erroro = rmse(allstore(n).Fest(ex),allstore(n).flow(ex)); % (mean(allstore(n).Fest(ex))-mean(allstore(n).flow(ex)));
         
         % calculate Sint as previously - just do it all together here 
         Sint1(n) = trapz(allstore(n).sound(ex)); % integral of filtered sound
@@ -123,7 +122,7 @@ for n = 1:length(CUE_R)
         allstore(n).Festi(isinf(allstore(n).Festi)) = 0; % replace Inf with 0
         
         % calculate error
-        allstore(n).errori = (mean(allstore(n).flow(in))-mean(-allstore(n).Festi(in)));
+        allstore(n).errori = rmse(allstore(n).Festi(in),-allstore(n).flow(in)); %(mean(allstore(n).flow(in))-mean(-allstore(n).Festi(in)));
         
         % estimate exh and inh tidal volume from flow
         VTest(1,n) = trapz(allstore(n).Fest(ex))/(afs/dr);
