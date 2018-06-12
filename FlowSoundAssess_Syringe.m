@@ -11,6 +11,7 @@ for x = 1:length(allstore)/10 % sets of 5 speeds each on-off
     for n = 1:length(pon)
         plot(allstore(pon(n)).soundi,allstore(pon(n)).flowi,'o')
     end
+xlabel('Sound'), ylabel('Flow')    
 end
 %linkaxes
 figure(112), clf
@@ -19,6 +20,7 @@ for x = 1:length(allstore)/10 % sets of 5 speeds each on-off
     for n = 1:length(pon)
         plot(allstore(pon(n)).soundo,allstore(pon(n)).flowo,'o')
     end
+xlabel('Sound'), ylabel('Flow')        
 end
 %linkaxes
 %% take first five only to make model

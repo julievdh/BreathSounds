@@ -7,7 +7,6 @@
 
 close all; 
 
-close all; 
 % set file number
 if exist('f','var'),
     keep f

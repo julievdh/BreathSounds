@@ -72,9 +72,12 @@
 %     end
 % end
 FlowSoundPlot_Syringe
-
+FlowSoundAssess_Syringe
+ffs = tickrate(1); % flow sampling rate
+dr = round(afs/ffs); % decimation rate
+%%
 for n = 1:length(allstore)
-            VTest(1,n) = trapz(allstore(n).Festo)/(afs/dr);
+        VTest(1,n) = trapz(allstore(n).Festo)/(afs/dr);
         VTest(2,n) = trapz(allstore(n).Festo2)/(afs/dr);
         VTesti(1,n) = trapz(allstore(n).Festi)/(afs/dr);
         VTesti(2,n) = trapz(allstore(n).Festi2)/(afs/dr);

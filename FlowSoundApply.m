@@ -12,7 +12,6 @@ for n = 1:length(q) % 1:length(q);
     [~,~,~,s_a] = CleanSpectra_fun(s,afs,[breath.cue(q(n),1)-0.4 breath.cue(q(n),2)+0.4+0.6]);
     % s_a(s_a == 0) = NaN;        % clean signal based on kurtosis and NaN out zeros
 
-    
     H = hilbenv(s_a); % take hilbert
     y = resample(H,1,dr)-mean(H(1:12000)); % resample hilbert envelope of sound to be same sampling frequency as pneumotach
     % remove mean of first 0.05 s to remove noise floor
