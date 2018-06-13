@@ -10,7 +10,7 @@ close all; clear;
 load('SarasotaFiles')
 
 % set file number
-f = 12;
+f = 14;
 
 % set path, tag
 path = strcat('D:/',Sarasota{f,1}(1:4),'/',Sarasota{f,1},'/');
@@ -28,8 +28,12 @@ load(filename)
 
 % return to other directory
 cd '\\uni.au.dk\Users\au575532\Documents\MATLAB\BreathSounds\'
-
-%% find time in tag record when trial starts
+%% IF tcue DOESN'T ALREADY EXIST FROM IMPORTED FILE: recalculate
+if exist('tcue') ~= 1
+    % find time in tag record when trial starts
+    [CAL,DEPLOY] = d3loadcal(tag);
+    tcue = etime(DEPLOY.TRIAL.STARTTIME, DEPLOY.TAGON.TIME);
+% find time in tag record when trial starts
 if isfield(DEPLOY,'TRIAL') == 0
     disp('Enter trial information and save DEPLOY')
     return 
@@ -37,18 +41,18 @@ if isfield(DEPLOY,'TRIAL') == 0
     TRIAL.STARTTIME = [2014 5 8 16 10 08]; % time start respirometry
     d3savecal(tag,'TRIAL',TRIAL);
 end
-
 tcue = etime(DEPLOY.TRIAL.STARTTIME, DEPLOY.TAGON.TIME);
+end
 
 % find only breath cues
-[cues,R] = findbreathcues(R);
+[~,breath] = findaudit(R,'breath');
 
 %% check and make sure that breaths are at the right time
 figure(1); clf
 plot(RAWDATA(:,1),RAWDATA(:,2),'LineWidth',2); hold on
-for n = 1:length(R.cue)
-    line([R.cue(n)-tcue R.cue(n)-tcue],[0 50],'color','k')
-    text(R.cue(n)-tcue,55,num2str(n))
+for n = 1:length(breath.cue)
+    line([breath.cue(n)-tcue breath.cue(n)-tcue],[0 50],'color','k')
+    text(breath.cue(n)-tcue,55,num2str(n))
 end
 xlabel('Time (s)','FontSize',12); ylabel('Flow rate (L/s)','FontSize',12)
 
