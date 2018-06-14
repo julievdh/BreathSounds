@@ -13,186 +13,63 @@ if exist('all_RAWDATA','var')
 end
 
 
-%% test - apply median filter to sound, make min zero
-
+%% Apply median filter to sound, make min zero
 for i = 1:length(allstore)
     allstore(i).sounde = medfilt1(allstore(i).sounde,4);
     allstore(i).soundi = medfilt1(allstore(i).soundi,4);
     allstore(i).soundi = allstore(i).soundi-min(allstore(i).soundi);
     allstore(i).sounde = allstore(i).sounde-min(allstore(i).sounde);
 end
-%% take first five only to make model
-% count good ones - using first 5 based on previous analysis
-for kk = 1:500
-    goodidx = find(arrayfun(@(allstore) ~isempty(allstore.soundi),allstore));
-    chs =  randi([1 length(goodidx)],1,5); % choose 5 random
-    substore = allstore(goodidx(chs)); % take up to the 5th one
-    %goodidx = find(arrayfun(@(allstore) ~isempty(allstore.sound),allstore));
-    %substore = allstore(1:goodidx(5)); % take up to the 5th one
-    
-    %% use relationship on sounds
-    % load([filename '_flowsound'])
-    allflowe = extractfield(substore,'flowe')';
-    allsounde = extractfield(substore,'sounde')';
-    allsounde(allsounde == 0) = NaN; nano = ~isnan(allsounde);       % find non-nan values
-    allsounde = allsounde(nano); allflowe = allflowe(nano);
-    [curve,goodness] = fit(allsounde,allflowe,'a*x^b','robust','bisquare');
-    % for first five inhales:
-    allflowi = extractfield(substore,'flowi');
-    allsoundi = extractfield(substore,'soundi');
-    allsoundi(allsoundi == 0) = NaN; nano = ~isnan(allsoundi); % remove NaN sound values
-    allsoundi = allsoundi(nano); allflowi = allflowi(nano);
-    pos = find(allflowi <= 0); % remove negative flow values
-    allsoundi = allsoundi(pos); allflowi = allflowi(pos);
-    
-    [curvei,gofi] = fit(allsoundi',-allflowi','a*x^b','robust','bisquare');
-    all_coeffi = coeffvalues(curvei);       % for inhales
-    ai = all_coeffi(1); bi = all_coeffi(2);
-    fitinfo.ai = ai; fitinfo.bi = bi; fitinfo.curvei = curvei; fitinfo.gofi = gofi;
-    fitinfo.a = a; fitinfo.b = b; fitinfo.curve = curve; fitinfo.gof = goodness;
-    
-    as2(kk) = curvei.a;
-    bs2(kk) = curvei.b;
-    rmse2(kk) = gofi.rmse;
-    rsq2(kk) = gofi.rsquare;
-    
-    
-    % save([cd '\PneumoData\' filename '_flowsound'],'fitinfo','-append')
-    
-    
-    
-    %% Fest = a*log10(shift_y)+b;
-    % figure(9), clf, subplot(1,2,1), hold on
-    % plot(extractfield(allstore,'sound'),extractfield(allstore,'flow'),'o')
-    % plot(curve), legend off
-    % plot(allsound(exhflow),allflow(exhflow),'.')
-    % ylabel('Measured Flow Rate (L/s)'), xlabel('Filtered sound envelope'), title('Exhale')
-    % text(6E-4,75,num2str(goodness.rsquare,'%4.2f'))
-    % subplot(122), hold on
-    % plot(extractfield(allstore,'sound'),-extractfield(allstore,'flow'),'o')
-    % plot(curvei), legend off
-    % plot(allsound(inhflow),-allflow(inhflow),'.')
-    % ylabel('Measured Flow Rate (L/s)'), xlabel('Filtered sound envelope'), title ('Inhale')
-    % text(6E-4,30,num2str(gofi.rsquare,'%4.2f'))
-    
-    % if exist('afs','var') == 0
-    %     afs = 240000;
-    %     if exist('all_RAWDATA','var')
-    %         ffs = 1/diff(all_RAWDATA(1:2,1)); % flow sampling rate
-    %     else ffs = 1/diff(RAW_DATA(1:2,1));
-    %     end
-    %     dr = round(afs/ffs); % decimation rate
-    % end
-    %% evaluate fit
-    % yprede = feval(curve,allsound(exhflow));
-    % [he,pe] = vartest2(resample(yprede-allflow(exhflow),1,10),resample(allflow(exhflow),1,10));
-    % ypredi = feval(curvei,allsound(inhflow));
-    % [hi,pi] = vartest2(resample(ypredi-allflow(inhflow),1,10),resample(allflow(inhflow),1,10));
-    
-    %% for all aligned files
-    
-    ffs = 1/diff(RAW_DATA(1:2,1)); % flow sampling rate
-    dr = round(afs/ffs); % decimation rate
-    
-    VTest = NaN(2,length(CUE_R)); VTesti = NaN(2,length(CUE_R)); % initialize VT estimate from sound
-    VTe2 = NaN(1,length(CUE_R)); VTi2 = NaN(1,length(CUE_R)); % initialize VT calculation from fow
-    Sint1 = NaN(1,length(CUE_R)); Sint2 = NaN(1,length(CUE_R));
-    if f == 22
-        VTest = NaN(2,23); VTesti = NaN(2,23); % because of tag move
-    end
-    
-    figure(19), clf, hold on
-    for n = 1:length(CUE_R)
-        if aligned(n) == 1,
-            %%
-            if size(allstore(n).soundi,2) > 1
-                allstore(n).soundi = allstore(n).soundi';
-            end
-            
-            %         ex = find(allstore(n).flow > 0);
-            %         in = find(allstore(n).flow < -1);
-            %         if isempty(in) == 0
-            %             if isempty(ex) == 0
-            %                 in = in(in > ex(1));  ex = ex(ex < in(1)); % no inhaled points prior to exhale, no exhaled points after inhale
-            %             end
-            %         end
-            %
-            % apply that relationship
-            if sum(~isnan(allstore(n).soundi)) > 2 % if there are more than 2 entries
-                allstore(n).sfill = naninterp(allstore(n).soundi);                           % interpolate NaNs
-                allstore(n).sfill(find(allstore(n).sfill<0)) = 0;                           % zero out any negative values at the beginning
-                allstore(n).sfill(find(allstore(n).sfill>max(allstore(n).soundi))) = 0;    % interpolation should never exceed max envelope
-                if allstore(n).sfill(1) == 0;
-                    allstore(n).sfill(1) = NaN;
-                end
-            else allstore(n).sfill = NaN(length(allstore(n).soundi),1);
-            end
-            % estimate flow from sound
-            %allstore(n).Fest = a*(allstore(n).sfill).^b;
-            % calculate error
-            %allstore(n).erroro = rmse(allstore(n).Fest(ex),allstore(n).flow(ex)); % (mean(allstore(n).Fest(ex))-mean(allstore(n).flow(ex)));
-            
-            % calculate Sint as previously - just do it all together here
-            %Sint1(n) = trapz(allstore(n).sound(ex)); % integral of filtered sound
-            
-            % for inhale
-            allstore(n).Festi = ai*(allstore(n).sfill).^bi;
-            allstore(n).Festi(isinf(allstore(n).Festi)) = 0; % replace Inf with 0
-            
-            % calculate error
-            gd = ~isnan(allstore(n).Festi); % find any NaNs
-            allstore(n).errori = rmse(-allstore(n).flowi(gd),allstore(n).Festi(gd)); %(mean(allstore(n).flow(in))-mean(-allstore(n).Festi(in)));
-            
-            % estimate exh and inh tidal volume from flow
-            %VTest(1,n) = trapz(allstore(n).Fest(ex))/(afs/dr);
-            VTesti(1,n) = trapz(allstore(n).Festi(gd))/(afs/dr);
-            
-            % calculate VT from flow instead -- as a check
-            VTi2(:,n) = trapz(allstore(n).flowi(gd))/(afs/dr);
-            %VTe2(:,n) = trapz(allstore(n).flowe)/(afs/dr);
-            
-            allstore(n).mnflowE = mean(allstore(n).flowe);
-            allstore(n).mnflowI = mean(allstore(n).flowi);
-            %allstore(n).ex = ex; allstore(n).dex = length(ex)/(afs/dr);
-            %allstore(n).in = in; allstore(n).din = length(in)/(afs/dr);
-            
-            plot(allstore(n).idxe,allstore(n).flowe)
-            plot(allstore(n).idxi,allstore(n).flowi)
-            %plot(allstore(n).idxe,allstore(n).Feste,'.')
-            plot(allstore(n).idxi,-allstore(n).Festi,'.')
-            
-            % Second hydrophone if exists
-            if isfield(allstore,'sound2') == 1
-                if sum(~isnan(allstore(n).sound2)) > 2 % if there are more than 2 entries
-                    % fill sound
-                    allstore(n).sfill2 = naninterp(allstore(n).sound2);                   % interpolate NaNs
-                    allstore(n).sfill2(find(allstore(n).sfill2<0)) = 0;                           % zero out any negative values at the beginning
-                    allstore(n).sfill2(find(allstore(n).sfill2>max(allstore(n).sound2))) = 0;    % interpolation should never exceed max envelope
-                    
-                    allstore(n).Fest2 = a*(allstore(n).sfill2).^b;
-                    allstore(n).erroro2 = (mean(allstore(n).Fest2(ex))-mean(allstore(n).flow(ex)));
-                    allstore(n).Festi2 = ai*(allstore(n).sfill2).^bi;
-                    allstore(n).Festi2(isinf(allstore(n).Festi2)) = 0;
-                    allstore(n).errori2 = (mean(allstore(n).flow(in))-mean(-allstore(n).Festi2(in)));
-                    
-                    % estimate exh and inh tidal volume from flow
-                    VTest(2,n) = trapz(allstore(n).Fest2(ex))/(afs/dr);
-                    VTesti(2,n) = trapz(allstore(n).Festi2(in))/(afs/dr);
-                    
-                    Sint2(n) = trapz(allstore(n).sound2(ex)); % integral of filtered sound
-                    
-                    plot(ex,allstore(n).Fest2(ex),'.')
-                    plot(in,-allstore(n).Festi2(in),'.')
-                end
-            end
-            % pause
-        end
-    end
-    figure(333), hold on 
-    plot(VTesti(1,:)--VTi2)
-    VTrmse(kk) = rmse(VTesti(1,:),-VTi2); 
+%% Fit relationship between flow and sound
+% use 25% of data
+[a,b] = FSfit(extractfield(allstore,'sounde'),extractfield(allstore,'flowe'),0.25);
+[ai,bi] = FSfit(extractfield(allstore,'soundi'),-extractfield(allstore,'flowi'),0.25);
+
+%% Apply relationship to aligned breaths
+ffs = 1/diff(RAW_DATA(1:2,1)); % flow sampling rate
+dr = round(afs/ffs); % decimation rate
+% initialize some things
+VTest = NaN(2,length(CUE_R)); VTesti = NaN(2,length(CUE_R)); % initialize VT estimate from sound
+VTe2 = NaN(1,length(CUE_R)); VTi2 = NaN(1,length(CUE_R)); % initialize VT calculation from fow
+Sint1 = NaN(1,length(CUE_R)); Sint2 = NaN(1,length(CUE_R));
+if f == 22
+    VTest = NaN(2,23); VTesti = NaN(2,23); % because of tag move
 end
-return 
+%%
+figure(19), clf, hold on
+for n = 1:length(CUE_R)
+    if aligned(n) == 1,
+        % Estimate flow from sound, compute error
+        [allstore(n).Feste,allstore(n).errore] = FSapply(allstore(n).sounde,allstore(n).flowe,a,b); % exhales
+        [allstore(n).Festi,allstore(n).errori] = FSapply(allstore(n).soundi,-allstore(n).flowi,ai,bi); % inhales
+        
+        gde = ~isnan(allstore(n).Feste); % find any NaNs
+        gdi = ~isnan(allstore(n).Festi); % find any NaNs
+        
+        % estimate exh and inh tidal volume from flow
+        VTest(1,n) = trapz(allstore(n).Feste(gde))/(afs/dr);
+        VTesti(1,n) = trapz(allstore(n).Festi(gdi))/(afs/dr);
+        
+        % calculate VT from flow instead -- as a check
+        VTe2(:,n) = trapz(allstore(n).flowe(gde))/(afs/dr);
+        VTi2(:,n) = trapz(allstore(n).flowi(gdi))/(afs/dr);
+        
+        
+        % keep mean flow rates 
+        allstore(n).mnflowE = mean(allstore(n).flowe(gde));
+        allstore(n).mnflowI = mean(allstore(n).flowi(gdi));
+        
+        % plot measured and estimated flows
+        plot(allstore(n).idxe,allstore(n).flowe)
+        plot(allstore(n).idxi,allstore(n).flowi)
+        plot(allstore(n).idxe,allstore(n).Feste,'.')
+        plot(allstore(n).idxi,-allstore(n).Festi,'.')
+        
+    end
+end
+figure(333), hold on
+plot(VTesti(1,:)--VTi2)
+VTrmse = rmse(VTesti(1,:),-VTi2);
 
 xlabel('Time (sec)'), ylabel('Flow Rate (L/s)')
 print([cd '/AnalysisFigures/' tag '_Flowmeas-est.png'],'-dpng')
@@ -204,34 +81,12 @@ plot([0 20],[0 20],'k')
 VTesti(VTesti < 0.5) = NaN; VTesti(VTesti > 25) = NaN;
 VTest(VTest < 0.5) = NaN; VTest(VTest > 25) = NaN;
 
-if size(all_SUMMARYDATA,2) == 5;
-    VTe = abs(all_SUMMARYDATA(CUE_S,5))'; % this is from Andreas. Checked contingency with VTe vs VTe2 and things look good.
-    if f == 10
-        VTe = VTe2;
-    end
-    VTi = abs(VTi2); % this is computed from flow
-end
-if size(all_SUMMARYDATA,2) == 8;
-    if f == 22;
-        VTe = abs(all_SUMMARYDATA(CUE_S(1:23),5))';
-        VTi = all_SUMMARYDATA(CUE_S(1:23),6)';
-    else
-        VTe = abs(all_SUMMARYDATA(CUE_S,5))';
-        VTi = all_SUMMARYDATA(CUE_S,6)';
-    end
-end
+VTe = VTe2;
+VTi = abs(VTi2); % this is computed from flow
 VTi(VTi < 0.5) = NaN;
 title([regexprep(tag,'_','    ') ' VTmeas-est.png'])
 plot(VTest(1,:),VTe,'^')
-
-if exist('VTi','var')
-    plot(VTesti(1,VTesti(1,:) > 0.5),VTi(1,VTesti(1,:) > 0.5),'v')
-else
-    plot(VTesti(1,VTesti(1,:) > 0.5),VTe(1,VTesti(1,:) > 0.5),'v')
-end
-plot(VTest(1,goodidx(chs)),VTe(goodidx(chs)),'k^','MarkerFaceColor','k')
-plot(VTesti(1,goodidx(chs)),VTi(goodidx(chs)),'kv','MarkerFaceColor','k')
-
+plot(VTesti(1,:),VTi,'v')
 
 ylabel('Measured VT'), xlabel('Estimated VT')
 subplot(3,1,3), hold on
@@ -262,7 +117,7 @@ savefig([cd '\AnalysisFigures\' tag '_VTmeas-est'])
 %     max(nanmean(VTi(VTesti > 0.5) - VTesti(VTesti > 0.5))./VTi(VTesti > 0.5))]
 %
 
-
+return 
 %% error figure
 for i = 1:length(cuts)
     mxEflow(:,i) = max(cuts(i).flow(:,2));
@@ -274,7 +129,6 @@ VTerre = VTest - repmat(VTe,2,1);
 VTerri = VTesti - repmat(VTi,2,1);
 
 figure(1), clf, hold on
-h1 = plot(mxEflow(goodidx),[allstore(:).erroro],'^'); % mean flow rate error
 h2 = plot(mxIflow(VTesti(1,:) > 0.5),[allstore((VTesti(1,:) > 0.5)).errori],'v'); % mean flow rate error
 if isfield(allstore,'sound2') == 1
     goodidx2 = find(arrayfun(@(allstore) ~isempty(allstore.erroro2),allstore));
@@ -283,8 +137,6 @@ if isfield(allstore,'sound2') == 1
 end
 plot(mxEflow,VTerre,'k^') % tidal volume error
 plot(mxIflow,VTerri,'kv') % tidal volume error
-plot(mxEflow(1:5),VTerre(:,goodidx(chs)),'k^','Markerfacecolor','k')
-plot(mxIflow(1:5),VTerri(:,goodidx(chs)),'kv','MarkerFaceColor','k') % tidal volume error
 
 lmo = fitlm(mxEflow(goodidx),[allstore(:).erroro]);
 lmi = fitlm(-mxIflow(VTesti(1,:) > 0.5),[allstore((VTesti(1,:) > 0.5)).errori]);
