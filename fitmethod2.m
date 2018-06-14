@@ -14,7 +14,7 @@ flwi = flwi(~isnan(sndi)); % remove NaNs in snVTdi
 sndi = sndi(~isnan(sndi)); % remove Nans in sndi
 
 for kk = 1:500
-chs = randi([1 length(sndi)],1,floor(length(sndi)/4)); % choose 25% of 
+chs = randi([1 length(sndi)],1,floor(length(sndi)/2)); % choose 25% of 
 
 figure(339), 
 plot(sndi(chs),-flwi(chs),'.')
@@ -125,12 +125,12 @@ rsq1(kk) = gofi.rsquare;
     end
     figure(331), hold on 
     plot(VTesti(1,:)--VTi2)
-    VTrmse2(kk) = rmse(VTesti(1,:),-VTi2); 
+    VTrmse3(kk) = rmse(VTesti(1,:),-VTi2); 
 end
 
 xlabel('Sound'), ylabel('Flow (L/s)')
 adjustfigurefont
-
+return 
 %% plot all vs. standard method
 figure(49), clf
 subplot(2,2,1), hold on 
