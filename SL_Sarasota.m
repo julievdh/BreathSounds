@@ -148,17 +148,19 @@ for n = 1:length(CUE_R)
 end
 
 %% plot flow sound coloured by flow rate
-figure(9),subplot(121), hold on
+figure(9), clf, subplot(121), hold on
 [cvec,c_all] = getcmap(mxEflow,'Max Exhaled Flow Rate'); % colormap by distance
 for i = 1:length(allstore)
-plot(allstore(i).sound,allstore(i).flow,'o','color',cvec(i,:))
+    allstore(i).sounde = medfilt1(allstore(i).sounde,5); 
+plot(allstore(i).sounde,allstore(i).flowe,'o','color',cvec(i,:))
 end
 colorbar off, title('Exhale')
 xlabel('Sound'), ylabel('Flow Rate (L/s)')
 subplot(122), hold on 
 [cvec,c_all] = getcmap(mxIflow,'Max Inhaled Flow Rate'); % colormap by distance
 for i = 1:length(allstore)
-plot(allstore(i).sound,-allstore(i).flow,'o','color',cvec(i,:))
+    allstore(i).soundi = medfilt1(allstore(i).soundi,5); 
+plot(allstore(i).soundi,-allstore(i).flowi,'o','color',cvec(i,:))
 end
 colorbar off, title('Inhale')
 xlabel('Sound'), ylabel('Flow Rate (L/s)')

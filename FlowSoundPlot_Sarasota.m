@@ -16,19 +16,21 @@ else % preallocate
 allstore = struct('sound', cell(1, length(CUE_R)), 'flow', cell(1, length(CUE_R)));
 aligned = NaN(length(CUE_R),1);
 end
-return 
+
 
 %%
-for n = 5:length(CUE_R)
+for n = 11; %length(CUE_R)
         %%
     if isnan(CUE_R(n)) == 0
         if Quality(CUE_R(n)) == 0       % only if Quality == 0
             % and only the good E/I portions go in?
             [s,afs] = d3wavread([breath.cue(CUE_R(n),1)-0.4 breath.cue(CUE_R(n),1)+breath.cue(CUE_R(n),2)+0.6],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
             s = s(:,CH)-mean(s(:,CH)); % channel 1 minus DC offset
+            s = cleanup_d3_hum(s,afs);
             [~,~,~,s_a] = CleanSpectra_fun(s,afs,[breath.cue(CUE_R(n),1)-0.4 breath.cue(CUE_R(n),2)+0.4+0.6]);
-            s_a(s_a == 0) = NaN;        % clean signal based on kurtosis and NaN out zeros
+            % s_a(s_a == 0) = NaN;        % clean signal based on kurtosis and NaN out zeros
             H = hilbenv(s_a); % take hilbert
+            H(H == 0) = NaN; % set NaNs here now
             if exist('RAW_DATA','var')
                 ffs = 1/diff(RAW_DATA(1:2,1)); % flow sampling rate
             else ffs = 1/diff(RAWDATA(1:2,1));
@@ -40,26 +42,27 @@ for n = 5:length(CUE_R)
             
             figure(90), clf, hold on
             [ax, h1, h2] = plotyy((1:length(y))/(afs/dr),y,cuts(CUE_S(n)).flow(:,1)-cuts(CUE_S(n)).flow(1,1),cuts(CUE_S(n)).flow(:,2));
-            set(h2,'Marker','o'), set(h1,'Marker','o') % ok they're at the same sampling frequency now
+            %set(h2,'Marker','o'), set(h1,'Marker','o') % ok they're at the same sampling frequency now
             
             if btype(CUE_R(n),1) == 1 % get exhalation only
                 % make one the same duration of the other
-                mn = min([length(cuts(CUE_S(n)).flow) length(y)]);
-                flow_short = cuts(CUE_S(n)).flow(1:mn,:); y = y(1:mn);
+                %mn = min([length(cuts(CUE_S(n)).flow) length(y)]);
+                %flow_short = cuts(CUE_S(n)).flow(1:mn,:); y = y(1:mn);
                 
                 % cross correlate
-                xc = xcorr(y,flow_short(:,2),'coeff'); % cross-correlate
-                [~,lag] = max(xc);
-                ac = xcorr(y,'coeff'); % auto-correlate
-                [~,reflag] = max(ac);
+                %xc = xcorr(y,flow_short(:,2),'coeff'); % cross-correlate
+                %[~,lag] = max(xc);
+                %ac = xcorr(y,'coeff'); % auto-correlate
+                %[~,reflag] = max(ac);
                 
                 % pad with zeros at beginning
-                if reflag-lag >= 1
-                    shift_y((reflag-lag)+(1:length(y))) = y;
-                end
-                if reflag-lag < 1
-                    shift_y = y(abs(reflag-lag)+1:end);
-                end
+                %if reflag-lag >= 1
+                %    shift_y((reflag-lag)+(1:length(y))) = y;
+                %end
+                %if reflag-lag < 1
+                %    shift_y = y(abs(reflag-lag)+1:end);
+                %end
+                shift_y = y;
                 
                 figure(100),
                 [ax, h1, h2] = plotyy((1:length(shift_y)),shift_y,1:length(cuts(CUE_S(n)).flow(:,2)),cuts(CUE_S(n)).flow(:,2));
@@ -105,9 +108,22 @@ for n = 5:length(CUE_R)
                     %[ curve,goodness] = fit(shift_y(exh),cuts(CUE_S(n)).flow(exh,2),'a*log10(x)+b');curve
                     % coeffs(n,:) = coeffvalues(curve);
                     % Rsq(n) = goodness.rsquare;
-                    allstore(n).sound(:,1) = shift_y(strt:ed)-min(shift_y(strt:ed))+1E-10;
-                    allstore(n).flow = cuts(CUE_S(n)).flow(strt:ed,2);
-                    allstore(n).idx = strt:ed; 
+                    figure(100)
+                    disp('select exhale')
+                    temp = ginput(2);
+                    strt = temp(1,1); ed = temp(2,1);
+                    
+                    allstore(n).sounde(:,1) = shift_y(strt:ed)-min(shift_y(strt:ed))+1E-10;
+                    allstore(n).flowe = cuts(CUE_S(n)).flow(strt:ed,2);
+                    allstore(n).idxe = strt:ed; 
+                    
+                    disp('select inhale')
+                    temp = ginput(2);
+                    strt = temp(1,1); ed = temp(2,1);
+                    
+                    allstore(n).soundi(:,1) = shift_y(strt:ed)-min(shift_y(strt:ed))+1E-10;
+                    allstore(n).flowi = cuts(CUE_S(n)).flow(strt:ed,2);
+                    allstore(n).idxi = strt:ed; 
                 end
             end
             
