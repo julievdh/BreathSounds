@@ -17,9 +17,10 @@ allstore = struct('sound', cell(1, length(CUE_R)), 'flow', cell(1, length(CUE_R)
 aligned = NaN(length(CUE_R),1);
 end
 
+return 
 
 %%
-for n = 11; %length(CUE_R)
+for n = 1:length(CUE_R)
         %%
     if isnan(CUE_R(n)) == 0
         if Quality(CUE_R(n)) == 0       % only if Quality == 0
