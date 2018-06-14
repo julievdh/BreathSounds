@@ -1,4 +1,4 @@
-function [cvec,c_all] = getcmap(val)
+function [cvec,c_all] = getcmap(val,label)
 c = viridis; 
 num = length(unique(val)); % how many colours to choose: here, range of cm from blowhole 
 nums = unique(val); % actual values
@@ -14,7 +14,7 @@ end
 colormap = cvec; cbar = colorbar;
 cbar.Ticks = linspace(0,1,num); % evenly spaced ticks between 0 and 1 
 cbar.TickLabels = num2str(nums(1:end)');
-cbar.Label.String = 'Distance from blow hole (cm)';
+cbar.Label.String = label;
 
 
 
