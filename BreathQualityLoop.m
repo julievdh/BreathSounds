@@ -14,10 +14,10 @@ warning off
 % f = 11; tag = DQ2017{f,1};
 % set path, tag
 % change tag and path for different deployments
-load('DQFiles2017')
-f = 10;
-tag = DQ2017{f,1};
-
+load('SarasotaFiles')
+f = 16;
+tag = Sarasota{f,1};
+%%
 recdir = d3makefname(tag,'RECDIR');
 
 % load calibration and deployment info, tag audit
@@ -55,10 +55,11 @@ end
 % [~,resp] = findaudit(R,'resp'); % just do for free-swimming ones
 
 % loop through all audited breaths (= length of R.cue)
-for i = 1:10 % length(resp.cue)
+for i = 11:20 % length(resp.cue)
     
     % downsample and filter single breath
     [x,xfilt,afs] = BreathFilt(i,breath,recdir,tag,1); % using RESP not R 
+   
     figure(1); hold on
     title(i)
     

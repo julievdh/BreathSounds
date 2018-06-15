@@ -38,7 +38,7 @@ x = x(:,2);
 
 % remove zero offset from recorder
 x = x-mean(x);
-
+x = cleanup_d3_hum(x,afs); % remove hum in D3
 % set values
 BL = 1024;      % FFT block size
 
@@ -53,7 +53,7 @@ afs = afs/4;    % reduce sampling rate
     imagesc(T,F/1000,10*log10(abs(P)))
     axis xy
     xlabel('Time');
-    ylabel('Frequency (kHz)');
+    ylabel('Frequency (kHz)'); ylim([0 20])
 %% based on this, build a low-pass filter
 
 B2 = fir1(4,0.16,'low'); % lowpass filter with cutoff
