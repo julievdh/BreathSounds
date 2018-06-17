@@ -14,3 +14,6 @@ seqlen = 9600 ;
 xp = sum(X.^2) ;
 T = mean(X(:,xp<median(xp)*1.5),2) ;
 y = x-[repmat(T,size(X,2),1);T(1:length(z))] ;
+if rms(y) > rms(x) % use this approach only if it reduces RMS -- added by JvdH
+    y = x
+end
