@@ -1,5 +1,6 @@
 function [B F T] = bspectrogram(rawsignal,afs,startcue,CLIM)
 % some adjustments from d3tagaudit
+% inputs are signal, afs, [start cue end cue], optional colour axis limits (CLIM) 
 
 x = rawsignal; % -mean(rawsignal); % remove DC
 BL = 1024;
