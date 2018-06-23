@@ -15,7 +15,7 @@ warning off
 % set path, tag
 % change tag and path for different deployments
 load('SarasotaFiles')
-f = 16;
+f = 15;
 tag = Sarasota{f,1};
 %%
 recdir = d3makefname(tag,'RECDIR');
@@ -55,10 +55,10 @@ end
 % [~,resp] = findaudit(R,'resp'); % just do for free-swimming ones
 
 % loop through all audited breaths (= length of R.cue)
-for i = 11:20 % length(resp.cue)
+for i = 171+(1:10) % length(resp.cue)
     
     % downsample and filter single breath
-    [x,xfilt,afs] = BreathFilt(i,breath,recdir,tag,1); % using RESP not R 
+    [x,xfilt,afs] = BreathFilt(i,breath,recdir,tag,0); % using RESP not R 
    
     figure(1); hold on
     title(i)
@@ -76,7 +76,7 @@ for i = 11:20 % length(resp.cue)
     % 20 = splashing but good (splash around breath can be removed)
     % 22 = splashing, not good; 3 = dolphin sounds (click, whistle); 4 = other
     
-    Quality(i) = input('enter breath quality  ');
+Quality(i) = input('enter breath quality  ');
     
     % if clip is overall good:
     if Quality(i) == 0 || Quality(i) == 20 || Quality(i) == 1 
