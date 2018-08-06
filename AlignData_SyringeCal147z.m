@@ -11,7 +11,7 @@ cd '\\uni.au.dk\Users\au575532\Documents\MATLAB\BreathSounds\PneumoData'
 load('SyringeCalData')
 
 % Load tags
-f = 3; 
+f = 3;
 tags(f).name = 'tt17_147z';
 
 % set path, tag
@@ -49,8 +49,8 @@ cd \\uni.au.dk\Users\au575532\Documents\MATLAB\BreathSounds\
 % have gone through and set *inhales 1-5 and *exhales 1-5 from syringe
 
 for f = 3
-    [tags(f).sin,~] = findaudit(tags(f).R,'sin'); % syringe in = inhale equivalent
-    [tags(f).sout,~] = findaudit(tags(f).R,'sout'); % syringe out = exhale equivalent
+    [tags(f).sin,~] = findaudit(tags(f).R,'sin'); % pulling syringe in = inhale equivalent
+    [tags(f).sout,~] = findaudit(tags(f).R,'sout'); % pushing syringe out = exhale equivalent
     
     % for syringe in
     %    figure(16), subplot(121), % hold on
@@ -73,6 +73,10 @@ for f = 3
         Sint1(f).in(i) = trapz(E2_s_1); % integral of filtered sound
         Sint2(f).in(i) = trapz(E2_s_2);
         envstore(f).in{i} = E2_s_1; % store
+        
+        BL = 2048;
+        [Pxxi(:,i),Freq] = pwelch(s1,hamming(BL),floor(BL/1.3),BL,afs,'onesided');
+        
     end
     
     % syringe out
@@ -88,9 +92,7 @@ for f = 3
         [~,~,~,s2] = CleanSpectra_fun(ns,afs,tags(f).sout(i,:));
         sigstore(f).o{2,i} = s2; % store
         
-        BL = 2048;
-        [Pxx(:,i),Freq] = pwelch(s1,hamming(BL),floor(BL/1.3),BL,afs,'onesided');
-        
+        [Pxxo(:,i),Freq] = pwelch(s1,hamming(BL),floor(BL/1.3),BL,afs,'onesided');
         
         [~,~,E2_s_1,~] = envfilt(sigstore(f).o{1,i},afs); % channel 1
         [~,~,E2_s_2,newfs] = envfilt(sigstore(f).o{2,i},afs); % channel 2
@@ -149,10 +151,10 @@ for k = 1:length(sigstore(f).o)
     [SL_o(:,k),F] = spectrum_level(sigstore(f).o{1,k},2048,afs);
     plot(SL_o(:,k),F)
     axis([-150 -60 0 5E3])
-%     lth = 2000; hth = 4000;
-%     SLhigh_o(k) = mean(SL_o(f>lth & f <hth,k));
-%     SLlow_o(k) = mean(SL_o(f<lth,k));
-%     plot([SLhigh_o(k) SLlow_o(k)],[hth lth],'o-')
+    %     lth = 2000; hth = 4000;
+    %     SLhigh_o(k) = mean(SL_o(f>lth & f <hth,k));
+    %     SLlow_o(k) = mean(SL_o(f<lth,k));
+    %     plot([SLhigh_o(k) SLlow_o(k)],[hth lth],'o-')
 end
 
 %% for inhales
@@ -208,7 +210,7 @@ for bl = 1:nblock
         
         
         cuts(pon3(ct)).flow = FilteredFlow{bl}(st{bl}(i):ed{bl}(i));
-        cuts(pon3(ct)).vol = vol; 
+        cuts(pon3(ct)).vol = vol;
         
         %subplot(121), hold on
         %plot flow-volume loop
@@ -230,7 +232,7 @@ gscatter(Sint1(f).out(pon3),[minflow{:}],dist3(pon3))
 gscatter(Sint1(f).in(pon3),[mxflow{:}],dist3(pon3))
 xlabel('Integral of Filtered Sound'), ylabel('Max Flow Rate (L/s)')
 
-figure(31), clf, hold on 
+figure(31), clf, hold on
 plot(Sint1(f).out(pon3(1:5)),[minflow{1}],'^-','color','k')
 plot(Sint1(f).out(pon3(6:10)),[minflow{2}],'^-','color','k')
 plot(Sint1(f).out(pon3(11:15)),[minflow{3}],'^-','color','k')
@@ -308,17 +310,23 @@ L = find(F < 0.5E4,1,'last'); % zoom in on the first half of F range
 allminflow = [minflow{:}];
 [cvec,c_all] = getcmap(dist3); % colormap by distance
 for i = 1:length(pon3)
-    plot3(F(1:L),zeros(1,L)+abs(allminflow(i)),Pxx(1:L,pon3(i))/sum(Pxx(1:L,pon3(i))),'color',c_all(pon3(i),:))
+    plot3(F(1:L),zeros(1,L)+abs(allminflow(i)),Pxxo(1:L,pon3(i))/sum(Pxxo(1:L,pon3(i))),'color',c_all(pon3(i),:))
 end
 xlabel('Frequency'), ylabel('Max Exhaled Flow Rate (L/s)'), zlabel('norm PSD')
-
 
 set(gca,'view',[13.8667   57.4667])
 print([cd '\AnalysisFigures\Syringe-147z-pneumon-PSD.png'],'-dpng')
 
+%%
+% F is the frequencies of interest
+% Pxx is the Welch's power spectral density, each row is a syringe pump
+
+
+
+%% 
 % get average flow rates for each *flow level*
-for i = 1:5 
-flows(i,:) = [mean(allminflow(i:5:end)) std(allminflow(i:5:end)) mean(allmxflow(i:5:end)) std(allmxflow(i:5:end))];
+for i = 1:5
+    flows(i,:) = [mean(allminflow(i:5:end)) std(allminflow(i:5:end)) mean(allmxflow(i:5:end)) std(allmxflow(i:5:end))];
 end
 
 
@@ -344,31 +352,31 @@ tbl = table(Sint1(f).in', SLlow_i',SLhigh_i',SLdiff_i',dist3',flow',pneum,...
     'VariableNames',{'Sint','SLlow','SLhigh','SLdiff','Distance','Flow','Pneumo'});
 % fit a linear model: is the source level affected by distance or
 % pneumotach?
-figure(33), clf, 
+figure(33), clf,
 lmLF = fitlm(tbl,'SLlow~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
 co = [201 82 11]/255;
 SyringeSpecLMfig(lmLF,co)
 lmHF = fitlm(tbl,'SLhigh~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'})%, plotSlice(lm)
 co = [255 129 54]/255;
-SyringeSpecLMfig(lmHF,co) 
+SyringeSpecLMfig(lmHF,co)
 
 print([cd '\AnalysisFigures\Syringe_147z_LMin'],'-dpng','-r300')
-    
+
 %lm = fitlm(tbl,'SLdiff~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}); plotSlice(lm)
 % how is sound integral affected by pneumotach?
 lm = fitlm(tbl,'Sint~Distance+Flow+Pneumo','Categorical',{'Flow','Pneumo'}), plotSlice(lm)
 
 % flow values: inhale occurs first, and is +ve
 for i = 1:5
-mnflow_inh(1,i) = mean(allmxflow(i:5:end));
-mnflow_inh(2,i) = std(allmxflow(i:5:end));
-mnflow_exh(1,i) = mean(allminflow(i:5:end));
-mnflow_exh(2,i) = std(allminflow(i:5:end));
+    mnflow_inh(1,i) = mean(allmxflow(i:5:end));
+    mnflow_inh(2,i) = std(allmxflow(i:5:end));
+    mnflow_exh(1,i) = mean(allminflow(i:5:end));
+    mnflow_exh(2,i) = std(allminflow(i:5:end));
 end
 
 
 
-return 
+return
 
 %% next: volume or flow relationship to SL or Sint
 tbl_o = table([minflow{:}]',Sint1(f).out(pon3)',SLlow_o(pon3)',SLhigh_o(pon3)',SLdiff_o(pon3)',dist3(pon3)',...

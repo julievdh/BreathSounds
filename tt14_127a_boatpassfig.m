@@ -7,9 +7,8 @@ R = loadaudit(tag);
 p = correctdepth(p,fs);
 t = (1:length(p))/(fs)/60;   % time in minutes
 
-
 cues = [2600 3000]; %[9100 9300]; % for 127a = [8800 8950];
-
+%% 
 [s,afs] = d3wavread(cues,d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
 s = s(:,1)-mean(s(:,1));
 figure(3), subplot('position',[0.1 0.4 0.8 0.5])
@@ -48,6 +47,10 @@ print([tag '_boatpass_breaths'], '-dpng', '-r300')
 %% and find bs within VTi_swim matrix
 load(strcat('C:/tag/tagdata/',tag,'_PQ'))
 load([cd '\PneumoData\6May2014_water_tt126b_FB142_resp_surfstore'])
+load('SarasotaFiles'), f = 12; tag = Sarasota{f,1};
+filename = strcat(Sarasota{f,2},'_resp');
+load([cd '\PneumoData\' filename])
+load([cd '\PneumoData\' filename '_flowsound.mat'])
 q = find(Quality == 20);
 bs = find(iswithin(breath.cue(q,1),cues));
 real(VTi_swim(bs));

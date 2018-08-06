@@ -73,10 +73,11 @@ VTest(find(isnan(VTest))) = nanmean([VTest,VTesti]);
 VTesti(find(isnan(VTesti))) = nanmean([VTest,VTesti]);
 
 q = find(Quality == 20); 
-
-VTestall(:,1) = vertcat(breath.cue(pon,1),breath.cue(q,1)); % time of breath
 surfVT = extractfield(surfstore,'VTesti'); % all surf values
 surfVT(isnan(surfVT)) = nanmean(surfVT); 
+
+VTestall = nan(length(pon)+length(q),3); 
+VTestall(:,1) = vertcat(breath.cue(pon,1),breath.cue(q,1)); % time of breath
 VTestall(:,2) = vertcat(VTest(~isnan(CUE_R))',nan(length(surfVT),1)); % exhaled VT estimate
 VTestall(:,3) = vertcat(VTesti(~isnan(CUE_R))',surfVT'); 
 VTestall = sortrows(VTestall,1); % sort by breath cue

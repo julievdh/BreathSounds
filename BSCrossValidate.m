@@ -20,9 +20,13 @@ xlabel(ax1,'VT Estimate - Hydrophone 1'), ylabel(ax1,'VT Estimate - Hydrophone 2
 [~,pt(1),~,statt] = ttest(VTest(1,:),VTest(2,:));
 [~,pt(2),~,statt(2)] = ttest(VTesti(1,:),VTesti(2,:));
 
+% correct for difference in means 
+scl = nanmean(VTest(2,:)./VTest(1,:));
+scli = nanmean(VTesti(2,:)./VTesti(1,:));
+
 % compare variances: F test
-[~,pv(1),~,statv(1)] = vartest2(VTest(2,:),VTest(1,:)); 
-[~,pv(2),~,statv(2)] = vartest2(VTesti(2,:),VTesti(1,:)); 
+[~,pv(1),~,statv(1)] = vartest2(VTest(1,:),VTest(2,:)/scl); 
+[~,pv(2),~,statv(2)] = vartest2(VTesti(1,:),VTesti(2,:)/scli); 
 
 print([cd '/AnalysisFigures/' tag '_Hcompare.png'],'-dpng')
 % have hydrophone clip level calculation for this tag
@@ -49,9 +53,13 @@ xlabel(ax1,'VT Estimate - Hydrophone 1'), ylabel(ax1,'VT Estimate - Hydrophone 2
 [~,pt(1),~,statt] = ttest(VTest(1,:),VTest(2,:));
 [~,pt(2),~,statt(2)] = ttest(VTesti(1,:),VTesti(2,:));
 
+% correct for difference in means 
+scl = nanmean(VTest(2,:)./VTest(1,:));
+scli = nanmean(VTesti(2,:)./VTesti(1,:));
+
 % compare variances: F test
-[~,pv(1),~,statv(1)] = vartest2(VTest(2,:),VTest(1,:)); 
-[~,pv(2),~,statv(2)] = vartest2(VTesti(2,:),VTesti(1,:)); 
+[~,pv(1),~,statv(1)] = vartest2(VTest(1,:),VTest(2,:)/scl); 
+[~,pv(2),~,statv(2)] = vartest2(VTesti(1,:),VTesti(2,:)/scli); 
 
 print([cd '/AnalysisFigures/' tag '_Hcompare.png'],'-dpng')
 % have hydrophone clip level calculation for this tag
@@ -84,9 +92,13 @@ xlabel(ax1,'VT Estimate - Hydrophone 1'), ylabel(ax1,'VT Estimate - Hydrophone 2
 [~,pt(1),~,statt] = ttest(VTest(1,:),VTest(2,:));
 [~,pt(2),~,statt(2)] = ttest(VTesti(1,:),VTesti(2,:));
 
+% correct for difference in means 
+scl = nanmean(VTest(2,:)./VTest(1,:));
+scli = nanmean(VTesti(2,:)./VTesti(1,:));
+
 % compare variances: F test
-[~,pv(1),~,statv(1)] = vartest2(VTest(2,:),VTest(1,:)); 
-[~,pv(2),~,statv(2)] = vartest2(VTesti(2,:),VTesti(1,:)); 
+[~,pv(1),~,statv(1)] = vartest2(VTest(1,:),VTest(2,:)/scl); 
+[~,pv(2),~,statv(2)] = vartest2(VTesti(1,:),VTesti(2,:)/scli); 
 
 print([cd '/AnalysisFigures/' tag '_Hcompare.png'],'-dpng')
 % have hydrophone clip level calculation for this tag

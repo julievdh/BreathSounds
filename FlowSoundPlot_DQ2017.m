@@ -13,7 +13,7 @@ end
 return 
 
 %%
-for n = 18:length(CUE_R)
+for n = 1:length(CUE_R)
     %%
     if isnan(CUE_R(n)) == 0
         if Quality(CUE_R(n)) == 0       % only if Quality == 0

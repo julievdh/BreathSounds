@@ -1,7 +1,7 @@
 % Align Data, get pneumo data
 % AlignData
 warning off 
-load('SarasotaFiles'), f = 12; tag = Sarasota{f,1};
+load('SarasotaFiles'), f = 16; tag = Sarasota{f,1};
 filename = strcat(Sarasota{f,2},'_resp');
 load([cd '\PneumoData\' filename])
 % load PQ audit
@@ -155,7 +155,7 @@ for n = 1:length(CUE_R)
 end
 
 %% save allstore
-save([cd '\PneumoData\' filename '_flowsound'],'allstore','aligned','filename','cuts','-append')
+save([cd '\PneumoData\' filename '_flowsound'],'afs','allstore','aligned','filename','cuts','-append')
 
 %% assess
 FlowSoundAssess

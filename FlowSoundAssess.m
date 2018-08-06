@@ -17,13 +17,14 @@ end
 for i = 1:length(allstore)
     allstore(i).sounde = medfilt1(allstore(i).sounde,4);
     allstore(i).soundi = medfilt1(allstore(i).soundi,4);
-    allstore(i).soundi = allstore(i).soundi-min(allstore(i).soundi);
-    allstore(i).sounde = allstore(i).sounde-min(allstore(i).sounde);
+   % allstore(i).soundi = allstore(i).soundi-min(allstore(i).soundi);
+   % allstore(i).sounde = allstore(i).sounde-min(allstore(i).sounde);
 end
 %% Fit relationship between flow and sound
 % use 25% of data
 [a,b] = FSfit(extractfield(allstore,'sounde'),extractfield(allstore,'flowe'),0.25);
 [ai,bi] = FSfit(extractfield(allstore,'soundi'),-extractfield(allstore,'flowi'),0.25);
+% alternatively here can use FSfitlog and then below, FSapplylog 
 
 %% Apply relationship to aligned breaths
 ffs = 1/diff(RAW_DATA(1:2,1)); % flow sampling rate
@@ -41,7 +42,9 @@ for n = 1:length(CUE_R)
     if aligned(n) == 1,
         % Estimate flow from sound, compute error
         [allstore(n).Feste,allstore(n).errore] = FSapply(allstore(n).sounde,allstore(n).flowe,a,b); % exhales
-        [allstore(n).Festi,allstore(n).errori] = FSapply(allstore(n).soundi,-allstore(n).flowi,ai,bi); % inhales
+        % [allstore(n).Festi,allstore(n).errori] = FSapply(allstore(n).soundi,-allstore(n).flowi,ai,bi); % inhales
+        [allstore(n).Festi,allstore(n).errori] = FSapplylog(allstore(n).soundi,-allstore(n).flowi,ai2); % inhales
+        
         
         gde = ~isnan(allstore(n).Feste); % find any NaNs
         gdi = ~isnan(allstore(n).Festi); % find any NaNs

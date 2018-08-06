@@ -2,7 +2,7 @@
 
 % tag = 'tt15_134a';
 load('SarasotaFiles')
-f = 14;
+f = 12;
 tag = Sarasota{f,1};
 recdir = d3makefname(tag,'RECDIR');
 

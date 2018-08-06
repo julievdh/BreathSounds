@@ -6,7 +6,8 @@
 
 % Julie van der Hoop // June 2014 // jvanderhoop@whoi.edu
 % Last Updated: 27 June 2014
-close all; clear; clc
+% close all; 
+clear; clc
 warning off
 
 %% LOAD IN TAG DATA
@@ -15,7 +16,7 @@ warning off
 % set path, tag
 % change tag and path for different deployments
 load('SarasotaFiles')
-f = 15;
+f = 11;
 tag = Sarasota{f,1};
 %%
 recdir = d3makefname(tag,'RECDIR');
@@ -55,10 +56,10 @@ end
 % [~,resp] = findaudit(R,'resp'); % just do for free-swimming ones
 
 % loop through all audited breaths (= length of R.cue)
-for i = 171+(1:10) % length(resp.cue)
+for i = 606+(1:10) % length(resp.cue)
     
     % downsample and filter single breath
-    [x,xfilt,afs] = BreathFilt(i,breath,recdir,tag,0); % using RESP not R 
+    [x,xfilt,afs] = BreathFilt(i,breath,recdir,tag,1); % using RESP not R 
    
     figure(1); hold on
     title(i)

@@ -2,7 +2,7 @@
 % load('6May2014_water_tt126b_FB142_resp_surfstore.mat')
 q = find(Quality == 20);
 tic
-for n = 21; % 1:length(q) % 1:length(q);
+for n = 1:length(q) % 1:length(q);
     sub = []; H = [];
     surfstore(n).sound = []; % make sure a row is empty
     % this has to be -0.2 to be consistent with the BreathQualityLoop
@@ -10,7 +10,8 @@ for n = 21; % 1:length(q) % 1:length(q);
     [s,afs] = d3wavread([breath.cue(q(n),1)-0.4 breath.cue(q(n),1)+breath.cue(q(n),2)+0.6],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
     s = s(:,CH)-mean(s(:,CH)); % channel selection minus DC offset
     sk = s; % keep old s for a sec
-    s = cleanup_d3_hum(s,afs); % IF THIS REDUCES RMS, USE, OTHERWISE NO. 
+    sf = cleanup_d3_hum(s(0.4*afs:(0.4+breath.cue(q(n),2))*afs),afs); % remove hum in D3 during surface period 
+    s(0.4*afs:(0.4+breath.cue(q(n),2))*afs) = sf; % put it back in the signal
     [~,~,~,s_a] = CleanSpectra_fun(s,afs,[breath.cue(q(n),1)-0.4 breath.cue(q(n),2)+0.4+0.6]);
     % s_a(s_a == 0) = NaN;        % clean signal based on kurtosis and NaN out zeros
 
@@ -137,21 +138,17 @@ q = q0(lia == 0);
 for n = 1:length(q);
     sub = []; H = [];
     [s,afs] = d3wavread([breath.cue(q(n),1)-0.4 breath.cue(q(n),1)+breath.cue(q(n),2)+0.6],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' ); 
-    s = s(:,1)-mean(s(:,1)); % channel 1 minus DC offset
-    s = cleanup_d3_hum(s,afs); % remove hum in D3
-    H = hilbenv(s); % take hilbert
+    s = s(:,CH)-mean(s(:,CH)); % channel selection minus DC offset
+    % FOR RESTING BREATHS, FILTER WHOLE THING.
+    sf = cleanup_d3_hum(s,afs); % remove hum in D3 during surface period 
+    s = sf; % s(0.4*afs:(0.4+breath.cue(q(n),2))*afs) = sf; % put it back in the signal
+    [~,~,~,s_a] = CleanSpectra_fun(s,afs,[breath.cue(q(n),1)-0.4 breath.cue(q(n),2)+0.4+0.6]);
+    
+    H = hilbenv(s_a); % take hilbert
     y = resample(H,1,dr)-mean(H(1:12000)); % resample hilbert envelope of sound to be same sampling frequency as pneumotach
     % remove mean of first 0.05 s to remove noise floor
     
-    %figure(90), clf
-    %subplot(211),
-    %plot(H), xlim([0 length(H)])
-    %subplot(212),
-    %bspectrogram(s,afs,breath.cue(q(n),:));
-    %xlabel('Time')
-    % get input for inhale selection
-    %temp = ginput(2);
-    %strt = temp(1,1); ed = temp(2,1);
+    
     if isnan(ins(q(n))) == 0
         sub = H(ins(q(n),1)*afs:ins(q(n),2)*afs); % select subset of signal
         y = resample(sub,1,dr); % -mean(sub(1:4800)); % resample hilbert envelope of sound to be same sampling frequency as pneumotach
@@ -162,12 +159,18 @@ for n = 1:length(q);
         reststore(n).soundi(:,1) = y;
         
         % also get spectral content
-        [Pxx_i,Freq,bw_i,s_i] = CleanSpectra_fun(s(ins(q(n),1)*afs:ins(q(n),2)*afs),afs,[breath.cue(q(n)) ins(q(n),2)-ins(q(n),1)]);
-        [E,E2,E2_s,newfs] = envfilt(s_i,afs); % get envelope and filter
-        reststore(n).E = E2_s; % this is sampled at newfs
+        [Pxx_i,Freq,bw_i,s_i,ct] = CleanSpectra_fun(s(ins(q(n),1)*afs:ins(q(n),2)*afs),afs,[breath.cue(q(n)) ins(q(n),2)-ins(q(n),1)]);
+        % [E,E2,E2_s,newfs] = envfilt(s_i,afs); % get envelope and filter
+        % reststore(n).E = E2_s; % this is sampled at newfs
         [SL_i,F] = speclev(s_i,2048,afs);
         reststore(n).SL_i = SL_i;
         reststore(n).Pxx_i = Pxx_i;
+        
+        reststore(n).cti = ct;
+        
+        reststore(n).sfilli = naninterp(reststore(n).soundi);                   % interpolate NaNs
+        reststore(n).sfilli(find(reststore(n).sfilli<0)) = 0;                           % zero out any negative values at the beginning
+        reststore(n).sfilli(find(reststore(n).sfilli>max(reststore(n).soundi))) = NaN;    % interpolation should never exceed max envelope 
     end
     if isnan(exp(q(n))) == 0
         sub = H((exp(q(n),1))*afs:(exp(q(n),2))*afs); % select subset of signal
@@ -184,15 +187,14 @@ for n = 1:length(q);
         reststore(n).Pxxo = Pxx;
         reststore(n).cto = ct;
         
-        % apply that relationship
         reststore(n).sfillo = naninterp(reststore(n).soundo);                   % interpolate NaNs
         reststore(n).sfillo(find(reststore(n).sfillo<0)) = 0;                           % zero out any negative values at the beginning
         reststore(n).sfillo(find(reststore(n).sfillo>max(reststore(n).soundo))) = NaN;    % interpolation should never exceed max envelope 
     end
 end
 for n = 1:length(reststore)
-    reststore(n).Festi = ai*(reststore(n).E).^bi; % do it on the filtered envelope with the bad bits removed
-    reststore(n).VTesti = trapz(reststore(n).Festi)/(afs/300); %newfs;
+    reststore(n).Festi = ai*(reststore(n).sfilli).^bi; % do it on the filtered envelope with the bad bits removed
+    reststore(n).VTesti = trapz(reststore(n).Festi)/(afs/dr); %newfs;
     if reststore(n).VTesti < 1
         reststore(n).VTesti = NaN; 
     end

@@ -1,6 +1,17 @@
 % VT contours
 
 figure(12), clf, hold on 
+
+if isfield(allstore,'din') == 0
+for i = 1:length(allstore)
+    if isempty(allstore(i).sounde) == 0
+    allstore(i).dex = length(allstore(i).sounde)/ffs;
+    end
+    if isempty(allstore(i).soundi) == 0
+    allstore(i).din = length(allstore(i).soundi)/ffs;
+    end
+end
+end
 %scatter([allstore(:).dex],abs([allstore(:).mnflowE]),20,VTe2(~isnan(VTe2)),'^')
 %scatter([allstore(:).din],abs([allstore(:).mnflowI]),20,abs(VTi2(~isnan(VTi2))),'v')
 scatter([allstore(:).din],abs([allstore(:).mnflowI]),20,'v')% abs(VTerri(1,~isnan(VTest(1,:))))','v','filled')
@@ -9,11 +20,15 @@ scatter([allstore(:).din],abs([allstore(:).mnflowI]),20,'v')% abs(VTerri(1,~isna
 % get mean estimated flow rates
 for i = 1:length(allstore) 
 mnflowIest_on(i)= nanmean(allstore(i).Festi); 
+if isfield(allstore,'Fest') == 1
 mnflowEest_on(i)= nanmean(allstore(i).Fest); 
+else mnflowEest_on(i) = nanmean(allstore(i).Feste); 
 end
+end
+
 scatter([allstore(:).din],abs(mnflowIest_on(~isnan(mnflowIest_on))),20,'v')
 % scatter([allstore(:).dex],abs(mnflowEest_on(~isnan(mnflowEest_on))),20,'^')
-
+   
 
 % range of durations
 drange = 0:0.05:max([allstore(:).din]);

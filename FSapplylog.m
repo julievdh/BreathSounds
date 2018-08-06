@@ -1,4 +1,4 @@
-function [Fest,error] = FSapply(snd,flw,a,b)
+function [Fest,error] = FSapply(snd,flw,a)
 %
 %
 %
@@ -6,6 +6,10 @@ function [Fest,error] = FSapply(snd,flw,a,b)
 if size(snd) > 1
     snd = snd';
 end
+if max(snd) < 1E-2 % then it's still in Pa so convert to uPa
+    snd = snd*1E6;
+end
+
 
 if sum(~isnan(snd)) > 2                  % if there are more than 2 NaNs
     sfill = naninterp(snd);             % interpolate NaNs
@@ -21,7 +25,7 @@ end
 
 %%
 % estimate flw from snd
-Fest = a*(sfill).^b;
+Fest = a*log10(sfill);
 Fest(isinf(Fest)) = 0; % replace Inf with 0
 
 % calculate error

@@ -2,7 +2,7 @@
 % clear, 
 close all, warning off 
 load('DQfiles2017')
-for f = [16:25 27]
+for f = 16% [16:25 27]
 keep corrstore f DQ2017 
 tag = DQ2017{f,1};
 

@@ -1,7 +1,7 @@
 % Audit Tag
 clear 
 %% Select tag
-tag = 'dl16_134a'; % 'tt17_135b'; %  
+tag = 'dl16_136a'; % 'tt17_135b'; %  
 prefix = strcat(tag(1:2),tag(6:9));
 recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
 % X = d3readswv(recdir,prefix);
