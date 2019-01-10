@@ -5,7 +5,7 @@
 
 close all, clear
 
-tag = 'dl16_138a';
+tag = 'tt14_125a';
 prefix = strcat(tag(1:2),tag(6:9));
 recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
 
@@ -14,6 +14,7 @@ recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
 [CAL,DEPLOY] = d3loadcal(tag); % if Dtag3
 R = loadaudit(tag);
 loadprh(tag);
+p = correctdepth(p,fs); % correct depth 
 
 %% this works to plot depth with time and add cues on top
 figure(10); clf, hold on; warning off
@@ -53,7 +54,7 @@ end
 
 % saveaudit(tag,R)
 %% or for DTAG3
-for i = 2:3 % 1:length(S)
+for i = 500:510 % 1:length(S)
    R = d3tagaudit_surf(tag,S(i,1),R,S(i,:));
 % try: R = d3tagaudit_surf(tag,S(i,1),R,S(i,:),'prh','jerk');
 %     % R = d3tagaudit_surf(tag,R.cue(end,1),R,S(i,:));
