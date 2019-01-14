@@ -1,10 +1,10 @@
-function [x_d,xfilt,afs] = BreathFilt(i,R,recdir,tag,pad)
+function [x_d,xfilt,afs,tcue1,tdur1] = BreathFilt(i,R,recdir,tag,pad)
 
 % Import wav file for a breath based on tag cues from audit, filter audio
 %
 % Inputs:
 %       i = breath number, to correspond with cue number
-%       R = tagaudit array of cues [cue duration]
+%       R = tagaudit array of cues [time duration]
 %       recdir = record directory
 %       tag = tag code (e.g., 'tt13_269b')
 %
@@ -12,6 +12,9 @@ function [x_d,xfilt,afs] = BreathFilt(i,R,recdir,tag,pad)
 %       x = original signal
 %       xfilt = filtered signal (fourth-order low pass Hamming-window FIR
 %       filter)
+%       afs = audio sampling frequency (Hz)
+%       tcue1 = time cue start (s)
+%       tdur1 = cue duration (s)
 %
 % Julie van der Hoop jvanderhoop@whoi.edu
 % 27 March 2014
@@ -20,7 +23,17 @@ function [x_d,xfilt,afs] = BreathFilt(i,R,recdir,tag,pad)
 
 % load wav file
 tcue1 = R.cue(i,1);     % start time cue of interest
+if strcmp(tag,'tt14_125a') && i < 303
+ tcue1 = R.cue(i,1)+0.65;     % special adjustment for some of tt125a 
+end
+if strcmp(tag,'tt14_125a') && i > 565 
+ tcue1 = tcue1+0.3;     % special adjustment for some of tt125a 
+end
 tdur1 = R.cue(i,2);     % end time cue of interest + pad
+if strcmp(tag,'tt14_125a') && i > 515
+ tdur1 = tdur1+0.3;     % special adjustment for some of tt125a 
+end
+
 if pad == 1
     [x,afs] = d3wavread([tcue1-0.4 tcue1+tdur1+0.6],recdir, [tag(1:2) tag(6:9)], 'wav' ) ;
 end
