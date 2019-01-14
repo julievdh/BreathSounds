@@ -1,5 +1,5 @@
-% can load in processed data for tt126b:
-% load('6May2014_water_tt126b_FB142_resp_surfstore.mat')
+recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
+
 q = find(Quality == 20);
 tic
 for n = 1:length(q) % 1:length(q);
@@ -15,12 +15,11 @@ for n = 1:length(q) % 1:length(q);
     % remove mean of first 0.05 s to remove noise floor
     
     % plot to check
-        figure(1), plot(s_a), hold on
-    plot(exp(q(n),1)*afs,0,'k*')
-    plot(exp(q(n),2)*afs,0,'k*')
-    plot(ins(q(n),2)*afs,0,'ko')
-    plot(ins(q(n),1)*afs,0,'ko')
-    
+    %     figure(1), plot(s_a), hold on
+    % plot(exp(q(n),1)*afs,0,'k*')
+    % plot(exp(q(n),2)*afs,0,'k*')
+    % plot(ins(q(n),2)*afs,0,'ko')
+    % plot(ins(q(n),1)*afs,0,'ko')
     
     % get previously-selected exhale information
     if isnan(exp(q(n))) == 0
@@ -32,7 +31,7 @@ for n = 1:length(q) % 1:length(q);
         surfstore(n).soundo(:,1) = y;
         
         % also get spectral content
-        [Pxx,Freq,bw,~,~,ct] = CleanSpectra_fun(s((exp(q(n),1))*afs:(exp(q(n),2))*afs),afs,breath.cue(q(n),:));
+        [Pxx,Freq,bw,~,~,ct] = CleanSpectra_fun(s((exp(q(n),1))*afs:(exp(q(n),2))*afs),afs,[tcue tdur]);
         [SL,F] = speclev(s,2048,afs);
         surfstore(n).SL_o = SL;
         surfstore(n).Pxxo = Pxx;
@@ -54,8 +53,8 @@ for n = 1:length(q) % 1:length(q);
         surfstore(n).soundi(:,1) = y;
         
         % also get spectral content
-        [Pxx,Freq,bw,~,~,ct] = CleanSpectra_fun(s((ins(q(n),1))*afs:(ins(q(n),2))*afs),afs,breath.cue(q(n),:));
-        [SL,F] = speclev(s,2048,afs);
+        [Pxx,Freq,bw,~,~,ct] = CleanSpectra_fun(s_a((ins(q(n),1))*afs:(ins(q(n),2))*afs),afs,[tcue tdur]);
+        [SL,F] = speclev(s_a,2048,afs);
         surfstore(n).SL_i = SL;
         surfstore(n).Pxxi = Pxx;
         surfstore(n).cti = ct; % compared to total number of bins = (length(xfilt)/afs)/0.025 (or exh(:,3)/0.025)
@@ -139,15 +138,11 @@ xlim([0 round(breath.cue(q(n))/60)])
 q0 = find(Quality == 0);
 lia = ismember(q0,pon);
 q = q0(lia == 0);
-% q = [1:2 77:82]; % good quality when no pneumotach, so resting, should be similar
+% good quality when no pneumotach, so resting, should be similar
 for n = 1:length(q);
     sub = []; H = [];
-    [s,afs] = d3wavread([breath.cue(q(n),1)-0.4 breath.cue(q(n),1)+breath.cue(q(n),2)+0.6],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
-    s = s(:,CH)-mean(s(:,CH)); % channel selection minus DC offset
-    % FOR RESTING BREATHS, FILTER WHOLE THING.
-    sf = cleanup_d3_hum(s,afs); % remove hum in D3 during surface period
-    s = sf; % s(0.4*afs:(0.4+breath.cue(q(n),2))*afs) = sf; % put it back in the signal
-    [~,~,~,s_a] = CleanSpectra_fun(s,afs,[breath.cue(q(n),1)-0.4 breath.cue(q(n),2)+0.4+0.6]);
+    [s,sfilt,afs,tcue,tdur] = BreathFilt(q(n),breath,recdir,tag,1); % using RESP not R 
+    [~,~,~,s_a] = CleanSpectra_fun(sfilt,afs,[tcue-0.4 tdur+0.4+0.6]);
     
     H = hilbenv(s_a); % take hilbert
     y = resample(H,1,dr)-mean(H(1:12000)); % resample hilbert envelope of sound to be same sampling frequency as pneumotach
