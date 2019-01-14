@@ -1,14 +1,17 @@
 % Align Data, get pneumo data
 % AlignData
-warning off 
-load('SarasotaFiles'), f = 16; tag = Sarasota{f,1};
+clear, close all; warning off 
+load('SarasotaFiles'), f = 10; tag = Sarasota{f,1};
 filename = strcat(Sarasota{f,2},'_resp');
 load([cd '\PneumoData\' filename])
 % load PQ audit
-load(strcat('C:/tag/tagdata/',tag,'_PQ'))
+load(strcat('C:\Users\au575532\Dropbox (Personal)\tag\tagdata\',tag,'_PQ'))
 CUE_S = find(CUE); CUE_R = CUE(find(CUE)); CH = 2; 
 tag = Sarasota{f,1}; R = loadaudit(tag); 
 [~,breath] = findbreathcues(R);
+if f == 10 % remove duplicates of breath cues
+   removeDupes
+end
 PneumCueTimeline
 if exist([cd '\PneumoData\' filename '_flowsound.mat'],'file') == 2
     load([cd '\PneumoData\' filename '_flowsound.mat'])  

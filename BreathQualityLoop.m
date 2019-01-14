@@ -25,11 +25,14 @@ recdir = d3makefname(tag,'RECDIR');
 [CAL,DEPLOY] = d3loadcal(tag);
 R = loadaudit(tag);
 [~,breath] = findbreathcues(R); 
+if f == 10 % remove duplicates of breath cues
+   removeDupes
+end
 
 %% LOOP THROUGH ALL BREATHS AUDITED
 % MIGHT HAVE TO CHANGE THIS TO DO BREATH SEARCH FIRST, THEN LENGTH = THAT
 % do params and quality already exist?
-cd('C:/tag/tagdata/')
+cd('C:\Users\au575532\Dropbox (Personal)\tag\tagdata\')
 list = dir('*.mat');
 if exist(strcat(tag,'_PQ.mat'), 'file') ~= 2
     % if not, establish Params and Quality
@@ -56,7 +59,7 @@ end
 % [~,resp] = findaudit(R,'resp'); % just do for free-swimming ones
 
 % loop through all audited breaths (= length of R.cue)
-for i = 606+(1:10) % length(resp.cue)
+for i = 595 %30+(1:10) % length(resp.cue)
     
     % downsample and filter single breath
     [x,xfilt,afs] = BreathFilt(i,breath,recdir,tag,1); % using RESP not R 
@@ -171,7 +174,7 @@ end
 % ZeroBreaths
 
 % save Params and Quality
-save(strcat('C:/tag/tagdata/',tag,'_PQ'),'eParams','iParams','tParams','sParams','Quality','btype','exp','ins','srf','R') 
+save(strcat(tag,'_PQ'),'eParams','iParams','tParams','sParams','Quality','btype','exp','ins','srf','R','-append') 
 % save the version of the audit structure that went with these params
 
 

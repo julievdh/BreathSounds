@@ -28,6 +28,7 @@ end
 
 %% Apply relationship to aligned breaths
 ffs = 1/diff(RAW_DATA(1:2,1)); % flow sampling rate
+[~,afs] = d3wavread([1 2],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
 dr = round(afs/ffs); % decimation rate
 % initialize some things
 VTest = NaN(2,length(CUE_R)); VTesti = NaN(2,length(CUE_R)); % initialize VT estimate from sound
@@ -42,8 +43,8 @@ for n = 1:length(CUE_R)
     if aligned(n) == 1,
         % Estimate flow from sound, compute error
         [allstore(n).Feste,allstore(n).errore] = FSapply(allstore(n).sounde,allstore(n).flowe,a,b); % exhales
-        % [allstore(n).Festi,allstore(n).errori] = FSapply(allstore(n).soundi,-allstore(n).flowi,ai,bi); % inhales
-        [allstore(n).Festi,allstore(n).errori] = FSapplylog(allstore(n).soundi,-allstore(n).flowi,ai2); % inhales
+        [allstore(n).Festi,allstore(n).errori] = FSapply(allstore(n).soundi,-allstore(n).flowi,ai,bi); % inhales
+        % [allstore(n).Festi,allstore(n).errori] = FSapplylog(allstore(n).soundi,-allstore(n).flowi,ai2); % inhales
         
         
         gde = ~isnan(allstore(n).Feste); % find any NaNs
@@ -74,7 +75,7 @@ figure(333), hold on
 plot(VTesti(1,:)--VTi2)
 VTrmse = rmse(VTesti(1,:),-VTi2);
 
-xlabel('Time (sec)'), ylabel('Flow Rate (L/s)')
+xlabel('Time (sec) UNITS WRONG'), ylabel('Flow Rate (L/s)')
 print([cd '/AnalysisFigures/' tag '_Flowmeas-est.png'],'-dpng')
 
 %%

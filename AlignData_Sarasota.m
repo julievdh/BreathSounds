@@ -10,7 +10,7 @@ close all; clear;
 load('SarasotaFiles')
 
 % set file number
-f = 16;
+f = 13;
 
 % set path, tag
 path = strcat('D:/',Sarasota{f,1}(1:4),'/',Sarasota{f,1},'/');
@@ -93,7 +93,7 @@ return
 
 for i = 1:length(locs)
     figure(2); hold on
-    cuts(i).flow = RAWDATA(locs(i)-100:locs(i)+200,:);
+    cuts(i).flow = RAWDATA(locs(i)-100:locs(i)+300,:);
     plot(cuts(i).flow(:,2))
 end
 save(filename,'cuts','-append')
