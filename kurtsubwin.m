@@ -11,7 +11,7 @@ plot(inds,sf(inds))
 plot(inds(ind),m,'o')
 % remove x seconds before and after
 cut = 0.01*afs;
-if inds(ind)-cut < 0
+if inds(ind)-cut <= 0
     plot(inds(1):inds(ind)+2*cut,sf(inds(1):inds(ind)+2*cut))
 else
     if inds(end) > inds(ind)+2*cut == 1
@@ -22,7 +22,7 @@ else
 end
 
 % but only until the end of the indexed values
-if inds(ind)-cut < 0
+if inds(ind)-cut <= 0
     s(inds(1):inds(ind)+2*cut) = zeros(length(inds(1):inds(ind)+2*cut),1); % cleaned original signal
     sf(inds(1):inds(ind)+2*cut) = zeros(length(inds(1):inds(ind)+2*cut),1); % cleaned filtered signal
 else
