@@ -1,7 +1,8 @@
 % Align Data, get pneumo data
 % AlignData
 clear, close all; warning off 
-load('SarasotaFiles'), f = 10; tag = Sarasota{f,1};
+load('SarasotaFiles'), f = 11; tag = Sarasota{f,1};
+recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
 filename = strcat(Sarasota{f,2},'_resp');
 load([cd '\PneumoData\' filename])
 % load PQ audit
@@ -28,10 +29,8 @@ for n = 1:length(CUE_R)
     if isnan(CUE_R(n)) == 0
         if Quality(CUE_R(n)) == 0       % only if Quality == 0
             % and only the good E/I portions go in?
-            [s,afs] = d3wavread([breath.cue(CUE_R(n),1)-0.4 breath.cue(CUE_R(n),1)+breath.cue(CUE_R(n),2)+0.6],d3makefname(tag,'RECDIR'), [tag(1:2) tag(6:9)], 'wav' );
-            s = s(:,CH)-mean(s(:,CH)); % channel 1 minus DC offset
-            s = cleanup_d3_hum(s,afs);
-            [~,~,~,s_a] = CleanSpectra_fun(s,afs,[breath.cue(CUE_R(n),1)-0.4 breath.cue(CUE_R(n),2)+0.4+0.6]);
+            [s,sfilt,afs,tcue,tdur] = BreathFilt(n,breath,recdir,tag,1); % using RESP not R 
+            [~,~,~,s_a] = CleanSpectra_fun(sfilt,afs,[tcue-0.4 tdur+0.4+0.6]);
             % s_a(s_a == 0) = NaN;        % clean signal based on kurtosis and NaN out zeros
             H = hilbenv(s_a); % take hilbert
             H(H == 0) = NaN; % set NaNs here now
