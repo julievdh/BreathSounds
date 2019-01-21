@@ -1,10 +1,9 @@
-recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
 
 q = find(Quality == 20);
 tic
-for n = 1:length(q) % 1:length(q);
+for n = 101:length(q) % 1:length(q);
     sub = []; H = [];
-    surfstore(n).sound = []; % make sure a row is empty
+    surfstore(n).soundi = []; % make sure a row is empty
     
     [s,sfilt,afs,tcue,tdur] = BreathFilt(q(n),breath,recdir,tag,1); % using RESP not R 
     [~,~,~,s_a] = CleanSpectra_fun(sfilt,afs,[tcue-0.4 tdur+0.4+0.6]);
@@ -72,13 +71,13 @@ for n = 1:length(surfstore)
     surfstore(n).Festi = ai*(surfstore(n).sfilli).^bi;
     surfstore(n).VTesti = trapz(surfstore(n).Festi)/(afs/dr);
     % estimate flow from sound´- exhale
-    surfstore(n).Festo = a*(surfstore(n).sfillo).^b;
-    surfstore(n).VTesto = trapz(surfstore(n).Festo)/(afs/dr);
+    %surfstore(n).Festo = a*(surfstore(n).sfillo).^b;
+    %surfstore(n).VTesto = trapz(surfstore(n).Festo)/(afs/dr);
     
-    if isempty(surfstore(n).Festo) == 1
-        surfstore(n).VTesto = NaN;
-        surfstore(n).cto = NaN;
-    end
+    %if isempty(surfstore(n).Festo) == 1
+    %    surfstore(n).VTesto = NaN;
+    %    surfstore(n).cto = NaN;
+    %end
     if isempty(surfstore(n).Festi) == 1
         surfstore(n).VTesti = NaN;
         surfstore(n).cti = NaN;
@@ -198,8 +197,8 @@ for n = 1:length(reststore)
     if reststore(n).VTesti < 1
         reststore(n).VTesti = NaN;
     end
-    reststore(n).Festo = a*(reststore(n).sfillo).^b;
-    reststore(n).VTesto = trapz(reststore(n).Festo)/(afs/dr);
+    %reststore(n).Festo = a*(reststore(n).sfillo).^b;
+    %reststore(n).VTesto = trapz(reststore(n).Festo)/(afs/dr);
 end
 
 %figure(4)
@@ -207,7 +206,7 @@ end
 
 figure(29)
 plot(breath.cue(q,1)/60,extractfield(reststore,'VTesti'),'v')
-plot(breath.cue(q,1)/60,extractfield(reststore,'VTesto'),'^')
+%plot(breath.cue(q,1)/60,extractfield(reststore,'VTesto'),'^')
 
 % save data
-save([cd '\PneumoData\' filename '_surfstore'],'surfstore','reststore','-append')
+save([cd '\PneumoData\' filename '_surfstore'],'surfstore','reststore','ai','bi','-append')

@@ -42,31 +42,31 @@ figure(19), clf, hold on
 for n = 1:length(CUE_R)
     if aligned(n) == 1,
         % Estimate flow from sound, compute error
-        [allstore(n).Feste,allstore(n).errore] = FSapply(allstore(n).sounde,allstore(n).flowe,a,b); % exhales
+        %[allstore(n).Feste,allstore(n).errore] = FSapply(allstore(n).sounde,allstore(n).flowe,a,b); % exhales
         [allstore(n).Festi,allstore(n).errori] = FSapply(allstore(n).soundi,-allstore(n).flowi,ai,bi); % inhales
         % [allstore(n).Festi,allstore(n).errori] = FSapplylog(allstore(n).soundi,-allstore(n).flowi,ai2); % inhales
         
         
-        gde = ~isnan(allstore(n).Feste); % find any NaNs
+       % gde = ~isnan(allstore(n).Feste); % find any NaNs
         gdi = ~isnan(allstore(n).Festi); % find any NaNs
         
         % estimate exh and inh tidal volume from flow
-        VTest(1,n) = trapz(allstore(n).Feste(gde))/(afs/dr);
+        %VTest(1,n) = trapz(allstore(n).Feste(gde))/(afs/dr);
         VTesti(1,n) = trapz(allstore(n).Festi(gdi))/(afs/dr);
         
         % calculate VT from flow instead -- as a check
-        VTe2(:,n) = trapz(allstore(n).flowe(gde))/(afs/dr);
+        %VTe2(:,n) = trapz(allstore(n).flowe(gde))/(afs/dr);
         VTi2(:,n) = trapz(allstore(n).flowi(gdi))/(afs/dr);
         
         
         % keep mean flow rates 
-        allstore(n).mnflowE = mean(allstore(n).flowe(gde));
+        %allstore(n).mnflowE = mean(allstore(n).flowe(gde));
         allstore(n).mnflowI = mean(allstore(n).flowi(gdi));
         
         % plot measured and estimated flows
-        plot(allstore(n).idxe,allstore(n).flowe)
+        %plot(allstore(n).idxe,allstore(n).flowe)
         plot(allstore(n).idxi,allstore(n).flowi)
-        plot(allstore(n).idxe,allstore(n).Feste,'.')
+        %plot(allstore(n).idxe,allstore(n).Feste,'.')
         plot(allstore(n).idxi,-allstore(n).Festi,'.')
         
     end
@@ -83,25 +83,25 @@ figure(29), clf
 subplot(3,1,1:2), hold on
 plot([0 20],[0 20],'k')
 VTesti(VTesti < 0.5) = NaN; VTesti(VTesti > 25) = NaN;
-VTest(VTest < 0.5) = NaN; VTest(VTest > 25) = NaN;
+% VTest(VTest < 0.5) = NaN; VTest(VTest > 25) = NaN;
 
-VTe = VTe2;
+% VTe = VTe2;
 VTi = abs(VTi2); % this is computed from flow
 VTi(VTi < 0.5) = NaN;
 title([regexprep(tag,'_','    ') ' VTmeas-est.png'])
-plot(VTest(1,:),VTe,'^')
+% plot(VTest(1,:),VTe,'^')
 plot(VTesti(1,:),VTi,'v')
 
 ylabel('Measured VT'), xlabel('Estimated VT')
 subplot(3,1,3), hold on
 pon = CUE_R(~isnan(CUE_R)); % all of the breaths where have pneumotach on
-plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
+% plot(breath.cue(pon)/60,VTe(~isnan(CUE_R)),'k.','markersize',10)
 plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 
 
 % ylim([0 12]), % set(gca,'ytick',0:2:12)
 xlim([breath.cue(pon(1))/60-1 breath.cue(pon(end))/60+1])
-plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^')
+%plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^')
 %plot(breath.cue(pon)/60,VTest(2,~isnan(CUE_R)),'^')
 plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
 %plot(breath.cue(pon)/60,VTesti(2,~isnan(CUE_R)),'v')
@@ -120,6 +120,7 @@ savefig([cd '\AnalysisFigures\' tag '_VTmeas-est'])
 % [min(nanmean(VTi(VTesti > 0.5) - VTesti(VTesti > 0.5))./VTi(VTesti > 0.5))
 %     max(nanmean(VTi(VTesti > 0.5) - VTesti(VTesti > 0.5))./VTi(VTesti > 0.5))]
 %
+save([cd '\PneumoData\' filename '_flowsound.mat'],'allstore','VTi','VTesti','-append')
 
 return 
 %% error figure
@@ -149,7 +150,6 @@ xlabel('Flow Rate (L/s)'), ylabel('Error')
 legend('Exhaled Flow Rate','Inhaled flow rate','Exhaled VT','Inhaled VT','Location','NW')
 title([regexprep(tag,'_','  ') ' error.png'])
 print([cd '/AnalysisFigures/' tag '_error.png'],'-dpng')
-save([cd '\PneumoData\' filename '_flowsound'],'allstore','VTi','VTe','VTerre','VTerri','VTest','VTesti','Sint1','Sint2','-append')
 
 %% or this linear model
 
