@@ -71,8 +71,8 @@ end
 BL = 1024;      % FFT block size
 
 % downsample by factor of 4
-x_d = resample(x,1,4);
-afs = afs/4;    % reduce sampling rate
+x_d = resample(x,1,2);
+afs = afs/2;    % reduce sampling rate
 
 % make spectrogram
 [B F T P] = spectrogram(x_d,hamming(BL),floor(BL/1.3),BL,afs,'yaxis');

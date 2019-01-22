@@ -1,7 +1,7 @@
 % Align Data, get pneumo data
 % AlignData
 clear, close all; warning off 
-load('SarasotaFiles'), f = 11; tag = Sarasota{f,1};
+load('SarasotaFiles'), f = 10; tag = Sarasota{f,1};
 recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
 filename = strcat(Sarasota{f,2},'_resp');
 load([cd '\PneumoData\' filename])
