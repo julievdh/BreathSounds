@@ -10,6 +10,7 @@ for f = 10:16
     load([cd '\PneumoData\' filename '_flowsound.mat'])
     CUE_S = find(CUE); CUE_R = CUE(find(CUE)); CH = 2;
     pon = CUE_R(~isnan(CUE_R)); % all of the breaths where have pneumotach on
+    
     % load PQ audit for quality
     load(strcat('C:\Users\au575532\Dropbox (Personal)\tag\tagdata\',tag,'_PQ'))
     
@@ -28,6 +29,15 @@ for f = 10:16
     plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
     
+    % add NaNs
+    VTi_swim = extractfield(surfstore,'VTesti');
+    VTi_swim(VTi_swim < 1) = NaN;
+    NA = find(isnan(VTi_swim)); % replace NaN with mean and sd
+    for i = 1:length(NA)
+        plot([breath.cue(q(NA(i)),1)/60 breath.cue(q(NA(i)),1)/60],[nanmean(VTi_swim)-nanstd(VTi_swim) nanmean(VTi_swim)+nanstd(VTi_swim)],'k')
+    end
+    plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
+    
     for n = 1:length(surfstore)
         plot(breath.cue(q(n))/60,surfstore(n).VTesti,'kv','markerfacecolor',[0.5 0.5 0.5])
     end
@@ -40,7 +50,7 @@ for f = 10:16
     loadprh(tag,'p','fs')
     plot((1:length(p))/fs/60,-p)
     xlim([0 round(length(p)/fs/60)])
-    grid on 
+    grid on
 end
 
 print([cd '\AnalysisFigures\PlotAllVTdepth_6.png'],'-dpng')
