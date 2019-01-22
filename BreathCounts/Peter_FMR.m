@@ -21,30 +21,24 @@ for i = 1:length(files)
     if isempty(files(i).tdiff) == 0
         % calculate duration of resp audit in hours
         files(i).dur = (files(i).resp(end) - files(i).resp(1))/3600;
-        if files(i).dur >= 6
-            mnIBI(i) = mean(files(i).tdiff); % mean IBI
-            stdIBI(i) = std(files(i).tdiff); % STD
-            mdIBI(i) = median(files(i).tdiff); % median IBI
-            modeIBI(i) = mode(files(i).tdiff); % mode
-            
-            % if isfield(files(i),'swim_ct') == 1
-            mnf(i) = 60/mnIBI(i); % mean frequency
-            mdf(i) = 60/mdIBI(i); % median frequency
-            % end
-        else
-            mnIBI(i) = NaN; % mean IBI
-            stdIBI(i) = NaN; % STD
-            mdIBI(i) = NaN; % median IBI
-            modeIBI(i) = NaN; % mode
-        end
+        
+        files(i).mnIBI = mean(files(i).tdiff); % mean IBI
+        files(i).stdIBI = std(files(i).tdiff); % STD
+        files(i).mdIBI = median(files(i).tdiff); % median IBI
+        files(i).modeIBI = mode(files(i).tdiff); % mode
+        
+        % if isfield(files(i),'swim_ct') == 1
+        files(i).mnf = 60/mnIBI(i); % mean frequency
+        files(i).mdf = 60/mdIBI(i); % median frequency
+        % end
+        
     else files(i).dur = NaN;
     end
 end
 
 wt = [files(:).wt];
 dur = [files(:).dur];
-spp = [files(:).spp];
-
+spp = [files(:).spp];i
 
 
 % remove some fields
@@ -56,3 +50,21 @@ cpy = rmfield(cpy,'age');
 % save table for Peter
 writetable(struct2table(cpy), 'Peter-FMR-files.csv')
 
+%% prh plot
+% preallocate figure and subplot
+fig = 0.25:0.25:length(cpy)/4;
+fig = ceil(fig);
+sub = repmat(1:4,1,10);
+
+for i = 1:length(cpy) % for all selected files
+    % if duration is > 6
+    if cpy(i).dur >= 6
+        loadprh(cpy(i).tag,'p','fs')
+        figure(fig(i))
+        subplot(2,2,sub(i))
+        if exist('p','var')
+            plott(p,fs), title(cpy(i).tag)
+            clear p fs
+        end
+    end
+end
