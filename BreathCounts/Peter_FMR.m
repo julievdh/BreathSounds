@@ -10,7 +10,11 @@
 % load count data from tags
 cd \\uni.au.dk\Users\au575532\Documents\MATLAB\BreathSounds\BreathCounts
 load('countdata')
-assignSpp % assign species codes 
+assignSpp % assign species codes
+
+% pick specific species codes: 3 4 6 7
+selspp = ismember(spp,[3 4 6 7]);
+seldur = dur(selspp); % all durations for the selected species
 
 
 for i = 1:length(files)
@@ -33,7 +37,7 @@ for i = 1:length(files)
             mdIBI(i) = NaN; % median IBI
             modeIBI(i) = NaN; % mode
         end
-        else files(i).dur = NaN;
+    else files(i).dur = NaN;
     end
 end
 
@@ -41,6 +45,14 @@ wt = [files(:).wt];
 dur = [files(:).dur];
 spp = [files(:).spp];
 
-% pick specific species codes: 3 4 6 7 
 
-% 
+
+% remove some fields
+cpy = rmfield(files,'resp');
+cpy(find(~ismember(selspp,spp))) = []; % remove other species
+cpy = rmfield(cpy,'tdiff');
+cpy = rmfield(cpy,'age');
+
+% save table for Peter
+writetable(struct2table(cpy), 'Peter-FMR-files.csv')
+
