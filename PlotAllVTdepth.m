@@ -1,6 +1,6 @@
 clear, close all
 
-for f = 11:16
+for f = 10:16
     
     % make filename
     load('SarasotaFiles'); tag = Sarasota{f,1};
@@ -24,7 +24,7 @@ for f = 11:16
     load([cd '\PneumoData\' filename '_surfstore.mat'])
     % plot data
     figure(99)
-    subplot(3,2,f-10), hold on
+    subplot(4,2,f-9), hold on
     plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
     
@@ -40,4 +40,7 @@ for f = 11:16
     loadprh(tag,'p','fs')
     plot((1:length(p))/fs/60,-p)
     xlim([0 round(length(p)/fs/60)])
+    grid on 
 end
+
+print([cd '\AnalysisFigures\PlotAllVTdepth_6.png'],'-dpng')
