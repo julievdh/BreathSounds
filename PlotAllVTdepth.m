@@ -1,7 +1,7 @@
 clear, close all
 
 load('SarasotaFiles');
-
+letters = {'A','B','C','D','E','F','G'};
 
 for f = 10:16
     
@@ -49,11 +49,22 @@ for f = 10:16
     q = q0(lia == 0);
     plot(breath.cue(q,1)/60,extractfield(reststore,'VTesti'),'v')
     
+    % add TLCest
+    TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
+
+    
     % load in and plot depth
     loadprh(tag,'p','fs')
     plot((1:length(p))/fs/60,-p)
     xlim([0 round(length(p)/fs/60)])
+    ylim([-10 TLC])
     grid on
+    
+    % add text in top corners:
+    axletter(gca,letters{f-9},14)
+    % animal ID
+    % weight 
+    
 end
 
 print([cd '\AnalysisFigures\PlotAllVTdepth_6.png'],'-dpng')
