@@ -63,6 +63,7 @@ for f = 10:16
         plot(breath.cue(q(ii),1)/60,VTi_rest(ii),'kv')
     end
     
+    plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'o-')
     % add TLCest
     TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
     
@@ -90,6 +91,8 @@ for f = 10:16
     end
     
     plotMassVT
+    VTcontourRR
+    
 end
 
 print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
