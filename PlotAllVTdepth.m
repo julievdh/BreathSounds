@@ -1,9 +1,12 @@
 clear, close all
 
+load('SarasotaFiles');
+
+
 for f = 10:16
     
     % make filename
-    load('SarasotaFiles'); tag = Sarasota{f,1};
+    tag = Sarasota{f,1};
     recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
     filename = strcat(Sarasota{f,2},'_resp');
     load([cd '\PneumoData\' filename])
