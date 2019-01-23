@@ -34,6 +34,9 @@ for f = 10:16
     
     % add release time
     [CAL,DEPLOY] = d3loadcal(tag);
+    if f == 13;
+        DEPLOY.TAGON.RELEASE = [2014           5           6          18          25          18];
+    end
     release = etime(DEPLOY.TAGON.RELEASE,DEPLOY.TAGON.TIME);
     plot([release/60 release/60],[-10 20],'k--')
     
@@ -55,11 +58,11 @@ for f = 10:16
     q = q0(lia == 0);
     plot(breath.cue(q,1)/60,VTi_rest,'v')
     % find quality > after release time
-    ii = find(q > release);
+    ii = find(breath.cue(q,1) > release);
     if ~isempty(ii)
         plot(breath.cue(q(ii),1)/60,VTi_rest(ii),'kv')
     end
-   
+    
     % add TLCest
     TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
     
