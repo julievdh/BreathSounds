@@ -1,5 +1,6 @@
 clear, close all
 
+addpath('\\uni.au.dk\Users\au575532\Documents\MATLAB\RespDetector')
 load('SarasotaFiles');
 letters = {'A','B','C','D','E','F','G'};
 
@@ -52,16 +53,21 @@ for f = 10:16
     % add TLCest
     TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
 
+    % add release time 
+    [CAL,DEPLOY] = d3loadcal(tag); 
+    release = etime(DEPLOY.TAGON.RELEASE,DEPLOY.TAGON.TIME);
+    plot([release/60 release/60],[-10 20],'k--')
     
     % load in and plot depth
     loadprh(tag,'p','fs')
-    plot((1:length(p))/fs/60,-p)
-    xlim([0 round(length(p)/fs/60)])
-    ylim([-10 TLC])
+    p = correctdepth(p,fs);
+    plot((1:length(p))/fs/60,-p,'k')
+    xlim([floor(breath.cue(1)/60)-2 round(breath.cue(end,1)/60)+2])
+    % ylim([-10 TLC])
     grid on
     
     % add text in top corners:
-    axletter(gca,letters{f-9},14)
+    axletter(gca,letters{f-9},12)
     % animal ID
     % weight 
     
