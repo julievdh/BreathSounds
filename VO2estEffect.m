@@ -113,30 +113,6 @@ iVe_ee = iRR.*rVTest(2:end); % instantaneous VE estimated exhale
 iVe_ei = iRR.*rVTesti(2:end); % instantaneous VE estimated inhale
 iVe_const = iRR*0.6*TLC; % 0.6*TLC; 
 
-%% plot VT versus resp rate
-figure(4), clf, hold on
-iRR = 60./diff(VTestall(:,1)); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% did this again for all breaths
-iV_ei = iRR.*VTestall(2:end,3);
-plot(VTestall(2:end,3),iRR,'o-')
-xlabel('Tidal Volume (L)')
-ylabel('Frequency (breaths/min)')
-
-% add contours of minute ventilation
-VTrange = 0:0.5:16;
-% range of breaths/min
-frange = 0:1:30;
-xlim([min(VTrange) max(VTrange)])
-
-VEcontour(:,1) = repmat(10,1,length(frange))./frange;
-VEcontour(:,2) = repmat(30,1,length(frange))./frange; 
-VEcontour(:,3) = repmat(50,1,length(frange))./frange; 
-VEcontour(:,4) = repmat(70,1,length(frange))./frange;
-VEcontour(:,5) = repmat(90,1,length(frange))./frange; 
-VEcontour(:,6) = repmat(110,1,length(frange))./frange; 
-
-
-plot(VEcontour,frange,'color',[0.75 0.75 0.75])
-
 return 
 %% resample to even grid
 [Ve_c,TVe] = resample(iVe_const,breath.cue(pon(2:end),1)/60,2); % 30s intervals
