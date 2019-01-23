@@ -36,7 +36,7 @@ for f = 10:16
     [CAL,DEPLOY] = d3loadcal(tag);
     release = etime(DEPLOY.TAGON.RELEASE,DEPLOY.TAGON.TIME);
     plot([release/60 release/60],[-10 20],'k--')
-   
+    
     % add NaNs
     q = find(Quality == 20); % free-swimming, good quality
     
@@ -49,11 +49,17 @@ for f = 10:16
     plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
     plot(breath.cue(q)/60,VTi_swim,'kv') %,'markerfacecolor',[0.5 0.5 0.5])
     
+    VTi_rest = extractfield(reststore,'VTesti');
     q0 = find(Quality == 0);
     lia = ismember(q0,pon);
     q = q0(lia == 0);
-    plot(breath.cue(q,1)/60,extractfield(reststore,'VTesti'),'v')
-    
+    plot(breath.cue(q,1)/60,VTi_rest,'v')
+    % find quality > after release time
+    ii = find(q > release);
+    if ~isempty(ii)
+        plot(breath.cue(q(ii),1)/60,VTi_rest(ii),'kv')
+    end
+   
     % add TLCest
     TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
     
@@ -62,7 +68,7 @@ for f = 10:16
     p = correctdepth(p,fs);
     plot((1:length(p))/fs/60,-p,'k')
     xlim([floor(breath.cue(1)/60)-2 round(breath.cue(end,1)/60)+2])
-    % ylim([-10 TLC])
+    ylim([-10 ceil(max(VTi_swim))])
     grid on
     
     % add text in top corners:
@@ -71,7 +77,7 @@ for f = 10:16
     % weight
     
     if ismember(f,15:16)
-        xlabel('Time (min')
+        xlabel('Time (min)')
     end
     if ismember(f,10:2:16)
         ylabel('Depth (m)')
