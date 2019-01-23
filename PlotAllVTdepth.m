@@ -20,7 +20,6 @@ for f = 10:16
     
     R = loadaudit(tag);
     [~,breath] = findbreathcues(R);
-    q = find(Quality == 20);
     if f == 10 % remove duplicates of breath cues
         removeDupes
     end
@@ -33,7 +32,14 @@ for f = 10:16
     plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
     
+    % add release time
+    [CAL,DEPLOY] = d3loadcal(tag);
+    release = etime(DEPLOY.TAGON.RELEASE,DEPLOY.TAGON.TIME);
+    plot([release/60 release/60],[-10 20],'k--')
+   
     % add NaNs
+    q = find(Quality == 20); % free-swimming, good quality
+    
     VTi_swim = extractfield(surfstore,'VTesti');
     VTi_swim(VTi_swim < 1) = NaN;
     NA = find(isnan(VTi_swim)); % replace NaN with mean and sd
@@ -41,10 +47,8 @@ for f = 10:16
         plot([breath.cue(q(NA(i)),1)/60 breath.cue(q(NA(i)),1)/60],[nanmean(VTi_swim)-nanstd(VTi_swim) nanmean(VTi_swim)+nanstd(VTi_swim)],'k')
     end
     plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
+    plot(breath.cue(q)/60,VTi_swim,'kv') %,'markerfacecolor',[0.5 0.5 0.5])
     
-    for n = 1:length(surfstore)
-        plot(breath.cue(q(n))/60,surfstore(n).VTesti,'kv','markerfacecolor',[0.5 0.5 0.5])
-    end
     q0 = find(Quality == 0);
     lia = ismember(q0,pon);
     q = q0(lia == 0);
@@ -52,11 +56,6 @@ for f = 10:16
     
     % add TLCest
     TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
-
-    % add release time 
-    [CAL,DEPLOY] = d3loadcal(tag); 
-    release = etime(DEPLOY.TAGON.RELEASE,DEPLOY.TAGON.TIME);
-    plot([release/60 release/60],[-10 20],'k--')
     
     % load in and plot depth
     loadprh(tag,'p','fs')
@@ -69,7 +68,14 @@ for f = 10:16
     % add text in top corners:
     axletter(gca,letters{f-9},12)
     % animal ID
-    % weight 
+    % weight
+    
+    if ismember(f,15:16)
+        xlabel('Time (min')
+    end
+    if ismember(f,10:2:16)
+        ylabel('Depth (m)')
+    end
     
 end
 
