@@ -4,8 +4,10 @@ addpath('\\uni.au.dk\Users\au575532\Documents\MATLAB\RespDetector')
 load('SarasotaFiles');
 letters = {'A','B','C','D','E','F','G'};
 
+alltab = nan(1,4);
+
 for f = 10:16
-    
+    q = []; % clear q 
     % make filename
     tag = Sarasota{f,1};
     recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
@@ -52,6 +54,9 @@ for f = 10:16
     plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
     plot(breath.cue(q)/60,VTi_swim,'kv') %,'markerfacecolor',[0.5 0.5 0.5])
     
+    % start tabulating all breath and timing 
+    alltab = vertcat(alltab,[repmat(f,length(q),1) breath.cue(q) VTi_swim' Quality(q)]);
+    
     VTi_rest = extractfield(reststore,'VTesti');
     q0 = find(Quality == 0);
     lia = ismember(q0,pon);
@@ -62,6 +67,9 @@ for f = 10:16
     if ~isempty(ii)
         plot(breath.cue(q(ii),1)/60,VTi_rest(ii),'kv')
     end
+    
+    alltab = vertcat(alltab,[repmat(f,length(q),1) breath.cue(q,1) VTi_rest' Quality(q)]);
+    
     
     plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'o-')
     % add TLCest
@@ -97,11 +105,12 @@ end
 
 % print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
 
-
 plotMbVT
 
+% save all VT/timing/quality data 
+writetable(array2table(alltab), 'all_VTesti.txt')
 
-%% plot one with %TLC 
+%% plot one with %TLC
 
 
 for f = 10:16
@@ -188,7 +197,6 @@ for f = 10:16
     if ismember(f,10:2:16)
         ylabel('Depth (m)     % TLC_{est}')
     end
-    
 end
 
 print([cd '\AnalysisFigures\PlotAllVTdepth_TLC.png'],'-dpng')
