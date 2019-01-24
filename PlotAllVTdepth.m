@@ -95,7 +95,11 @@ for f = 10:16
     
 end
 
-print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
+% print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
+
+
+plotMbVT
+
 
 %% plot one with %TLC 
 

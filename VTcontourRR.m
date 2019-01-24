@@ -25,6 +25,10 @@ ylabel('Frequency (breaths/min)')
 
 print([cd '\AnalysisFigures\VT-contour-' tag],'-dpng')
 
+figure(8), hold on, 
+VE = VTi_swim(2:end).*iRR';
+plot(VTi_swim(2:end),VE,'o')
+
 % figure
 % plot3(breath.cue(q,1)/60,VTi_swim(2:end),iRR,'o-')
 
