@@ -33,11 +33,13 @@ for f = 10:16
     subplot(4,2,f-9), hold on
     plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
+    alltab = vertcat(alltab,[repmat(f,length(pon),1) breath.cue(pon) VTesti(1,~isnan(CUE_R))' repmat(1,length(pon),1)]); % Quality 1 is now pneum on
+    
     
     % add release time
     [CAL,DEPLOY] = d3loadcal(tag);
     if f == 13;
-        DEPLOY.TAGON.RELEASE = [2014           5           6          18          25          18];
+        DEPLOY.TAGON.RELEASE = [2014  5  6  18  25  18];
     end
     release = etime(DEPLOY.TAGON.RELEASE,DEPLOY.TAGON.TIME);
     plot([release/60 release/60],[-10 20],'k--')
