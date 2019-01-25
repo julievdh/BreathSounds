@@ -105,10 +105,11 @@ end
 
 % print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
 
-plotMbVT
+% plotMbVT
 
 % save all VT/timing/quality data 
-writetable(array2table(alltab), 'all_VTesti.txt')
+writetable(array2table(real(alltab)), 'all_VTesti.txt')
+fixNaN % fix NaNs in .txt
 
 %% plot one with %TLC
 
