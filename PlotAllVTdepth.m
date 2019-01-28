@@ -7,7 +7,7 @@ letters = {'A','B','C','D','E','F','G'};
 alltab = nan(1,4);
 
 for f = 10:16
-    q = []; % clear q 
+    q = []; % clear q
     % make filename
     tag = Sarasota{f,1};
     recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
@@ -20,7 +20,7 @@ for f = 10:16
     % load PQ audit for quality
     load(strcat('C:\Users\au575532\Dropbox (Personal)\tag\tagdata\',tag,'_PQ'))
     
-    R = loadaudit(tag);
+    % R = loadaudit(tag);
     [~,breath] = findbreathcues(R);
     if f == 10 % remove duplicates of breath cues
         removeDupes
@@ -33,6 +33,7 @@ for f = 10:16
     subplot(4,2,f-9), hold on
     plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
+    % tabulate cue, quality, VTest
     alltab = vertcat(alltab,[repmat(f,length(pon),1) breath.cue(pon) VTesti(1,~isnan(CUE_R))' repmat(1,length(pon),1)]); % Quality 1 is now pneum on
     
     
@@ -56,8 +57,6 @@ for f = 10:16
     plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
     plot(breath.cue(q)/60,VTi_swim,'kv') %,'markerfacecolor',[0.5 0.5 0.5])
     
-    % start tabulating all breath and timing 
-    alltab = vertcat(alltab,[repmat(f,length(q),1) breath.cue(q) VTi_swim' Quality(q)]);
     
     VTi_rest = extractfield(reststore,'VTesti');
     q0 = find(Quality == 0);
@@ -69,8 +68,19 @@ for f = 10:16
     if ~isempty(ii)
         plot(breath.cue(q(ii),1)/60,VTi_rest(ii),'kv')
     end
+    [outCue,outOrigin] = merge_sorted(breath.cue(Quality == 20),breath.cue(q),20,0);
+    outVT = nan(length(outCue),1); % refresh
+    outVT(find(outOrigin == 0)) = VTi_rest;
+    outVT(find(outOrigin == 20)) = VTi_swim;
+    % set pre/post release indicator
+    outQuality =  nan(length(outCue),1); % refresh
+    ii = find(outCue > release);
+    outQuality(ii) = 20;
+    ii = find(outCue <= release);
+    outQuality(ii) = 0;
     
-    alltab = vertcat(alltab,[repmat(f,length(q),1) breath.cue(q,1) VTi_rest' Quality(q)]);
+    % tabulate after fixing quality rest-swim
+    alltab = vertcat(alltab,[repmat(f,length(outCue),1) outCue outVT(:) outQuality]);
     
     
     plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'o-')
@@ -109,10 +119,11 @@ end
 
 % plotMbVT
 
-% save all VT/timing/quality data 
+% save all VT/timing/quality data
 writetable(array2table(real(alltab)), 'all_VTesti.txt')
 fixNaN % fix NaNs in .txt
 
+return
 %% plot one with %TLC
 
 

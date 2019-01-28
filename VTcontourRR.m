@@ -1,6 +1,6 @@
 figure(4), clf, hold on
-q = find(Quality == 20); % free-swimming, good quality
-iRR = 60./diff(breath.cue(q)); % not just free´swimming for resp rate
+
+iRR = 60./diff(outCue); % not just free´swimming for resp rate
 
 % add contours of minute ventilation
 VTrange = 0:0.5:16;
@@ -19,16 +19,16 @@ plot(VEcontour,frange,'color',[0.75 0.75 0.75])
 xlim([min(VTrange) max(VTrange)])
 ylim([0 16])
 
-plot(VTi_swim(2:end),iRR,'o-')
+plot(outVT(2:end),iRR,'o-')
 xlabel('Tidal Volume (L)')
 ylabel('Frequency (breaths/min)')
 
 print([cd '\AnalysisFigures\VT-contour-' tag],'-dpng')
 
 figure(8), hold on, 
-VE = VTi_swim(2:end).*iRR';
-plot(VTi_swim(2:end),VE,'o')
+VE = outVT(2:end).*iRR;
+plot(outVT(2:end),VE,'o')
 
 % figure
-% plot3(breath.cue(q,1)/60,VTi_swim(2:end),iRR,'o-')
+% plot3(outCue/60,outVT(2:end),iRR,'o-')
 
