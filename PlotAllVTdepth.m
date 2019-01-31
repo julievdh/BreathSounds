@@ -4,7 +4,7 @@ addpath('\\uni.au.dk\Users\au575532\Documents\MATLAB\RespDetector')
 load('SarasotaFiles');
 letters = {'A','B','C','D','E','F','G'};
 
-alltab = nan(1,4);
+alltab = nan(1,6);
 
 for f = 10:16
     q = []; % clear q
@@ -28,13 +28,18 @@ for f = 10:16
     
     % load in data
     load([cd '\PneumoData\' filename '_surfstore.mat'])
+    
+    % calculate exp and insp duration 
+    expdur = exp(:,2)-exp(:,1); 
+    insdur = ins(:,2)-ins(:,1);
+    
     % plot data
     figure(99)
     subplot(4,2,f-9), hold on
     plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
     % tabulate cue, quality, VTest
-    alltab = vertcat(alltab,[repmat(f,length(pon),1) breath.cue(pon) VTesti(1,~isnan(CUE_R))' repmat(1,length(pon),1)]); % Quality 1 is now pneum on
+    alltab = vertcat(alltab,[repmat(f,length(pon),1) breath.cue(pon) VTesti(1,~isnan(CUE_R))' expdur(pon) insdur(pon) repmat(1,length(pon),1)]); % Quality 1 is now pneum on
     
     
     % add release time
@@ -54,8 +59,8 @@ for f = 10:16
     for i = 1:length(NA)
         plot([breath.cue(q(NA(i)),1)/60 breath.cue(q(NA(i)),1)/60],[nanmean(VTi_swim)-nanstd(VTi_swim) nanmean(VTi_swim)+nanstd(VTi_swim)],'k')
     end
-    plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor','w')
-    plot(breath.cue(q)/60,VTi_swim,'kv') %,'markerfacecolor',[0.5 0.5 0.5])
+    plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor',[0.25 0.25 0.25])
+    plot(breath.cue(q)/60,VTi_swim,'kv') 
     
     
     VTi_rest = extractfield(reststore,'VTesti');
@@ -70,8 +75,15 @@ for f = 10:16
     end
     [outCue,outOrigin] = merge_sorted(breath.cue(Quality == 20),breath.cue(q),20,0);
     outVT = nan(length(outCue),1); % refresh
-    outVT(find(outOrigin == 0)) = VTi_rest;
-    outVT(find(outOrigin == 20)) = VTi_swim;
+    outeDur = nan(length(outCue),1); 
+    outiDur = nan(length(outCue),1); 
+    outVT(find(outOrigin == 0)) = VTi_rest; % tidal volume when resting
+    outVT(find(outOrigin == 20)) = VTi_swim; % tidal volume when swimming
+    outeDur(find(outOrigin == 0)) = expdur(q); % exhaled duration when resting
+    outeDur(find(outOrigin == 20)) = expdur(Quality == 20); % exhaled duration when swimming
+    outiDur(find(outOrigin == 0)) = insdur(q); % inhaled duration when resting
+    outiDur(find(outOrigin == 20)) = insdur(Quality == 20); % inhaled duration when swimming
+    
     % set pre/post release indicator
     outQuality =  nan(length(outCue),1); % refresh
     ii = find(outCue > release);
@@ -80,7 +92,7 @@ for f = 10:16
     outQuality(ii) = 0;
     
     % tabulate after fixing quality rest-swim
-    alltab = vertcat(alltab,[repmat(f,length(outCue),1) outCue outVT(:) outQuality]);
+    alltab = vertcat(alltab,[repmat(f,length(outCue),1) outCue outVT(:) outeDur(:) outiDur(:) outQuality]);
     
     
     plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'o-')
@@ -124,6 +136,25 @@ writetable(array2table(real(alltab)), 'all_VTesti.txt')
 fixNaN % fix NaNs in .txt
 
 return
+
+% make table, test lm 
+tab = array2table(real(alltab),'variableNames',{'ID','cue','VTi','edur','idur','Quality'});
+restTab = tab(tab.Quality < 2,:); 
+tab.ID = categorical(tab.ID); tab.Quality = categorical(tab.Quality); 
+lme = fitlme(tab,'VTi~Quality+(1|ID)+(Quality-1|ID)');
+lme2 = fitlme(tab,'VTi~Quality+(Quality|ID)');
+F = fitted(lme2); 
+figure, hold on 
+plot(tab.Quality,tab.VTi,'ro')
+plot(tab.Quality,F,'bx')
+
+restTab.ID = categorical(restTab.ID); restTab.Quality = categorical(restTab.Quality); 
+lmRest = fitlme(restTab,'VTi~idur+Quality+(Quality|ID)')
+F = fitted(lmRest); 
+figure, hold on 
+plot(restTab.Quality,restTab.VTi,'ro')
+plot(restTab.Quality,F,'bx')
+
 %% plot one with %TLC
 
 
