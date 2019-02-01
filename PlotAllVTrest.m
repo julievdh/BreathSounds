@@ -48,7 +48,7 @@ for f = 10:16
     outVT(find(outOrigin == 0)) = VTi_rest; % tidal volume when no pneum
     outVT(find(outOrigin == 1)) = VTesti(1,~isnan(CUE_R)); % tidal volume when pneum on
     
-    expdur = exp(:,2)-exp(:,1); insdur = ins(:,2)-ins(:,1); 
+    expdur = exp(:,2)-exp(:,1); insdur = ins(:,2)-ins(:,1);
     outeDur = nan(length(outCue),1); outiDur = nan(length(outCue),1);
     outeDur(find(outOrigin == 0)) = expdur(q); % exhaled duration when p off
     outeDur(find(outOrigin == 1)) = expdur(pon); % exhaled duration when p on
@@ -72,5 +72,15 @@ end
 writetable(array2table(real(alltab)), 'all_VT_rest.txt')
 fixNaN('all_VT_rest.txt') % fix NaNs in .txt
 
-print([cd '\AnalysisFigures\PlotAllVTrest_7.png'],'-dpng')
+% print([cd '\AnalysisFigures\PlotAllVTrest_7.png'],'-dpng')
 
+%%
+figure(2)
+scatter3((1+alltab(:,4)) - alltab(:,1).*rand(length(alltab),1)./100, alltab(:,6), alltab(:,3), 25, alltab(:,1)*[rand rand rand]/20,'filled')
+set(gca,'xtick',1:2,'xticklabel',{'Pneumotach Off','Pneumotach On'})
+zlabel('Tidal Volume (L)')
+ylabel('Inhale duration (s)')
+xlim([0.5 2.5])
+set(gca,'view',[-34.8333   26.2667])
+
+print([cd '\AnalysisFigures\3dVTi_Rest.png'],'-dpng')
