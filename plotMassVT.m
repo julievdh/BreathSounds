@@ -37,4 +37,6 @@ if f == 16
     plot(mbx,TLC,'k--')
     
     ylim([1 30])
+    
+    print([cd '\AnalysisFigures\plotMassVT'],'-dpng')
 end
