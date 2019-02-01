@@ -4,7 +4,7 @@ addpath('\\uni.au.dk\Users\au575532\Documents\MATLAB\RespDetector')
 load('SarasotaFiles');
 letters = {'A','B','C','D','E','F','G'};
 
-alltab = nan(1,5);
+alltab = nan(1,6);
 
 for f = 10:16
     q = []; % clear q
@@ -60,7 +60,7 @@ for f = 10:16
     ii = find(iswithin(outCue,[breath.cue(pon(1))-5*60 breath.cue(pon(end))+5*60]));
     plot(outCue(ii)/60,outVT(ii),'k*')
     
-    alltab = vertcat(alltab,[outCue(ii) outVT(ii) outOrigin(ii) outeDur(ii) outiDur(ii)]);
+    alltab = vertcat(alltab,[repmat(f,length(ii),1) outCue(ii) outVT(ii) outOrigin(ii) outeDur(ii) outiDur(ii)]);
     
     xlim([floor(breath.cue(1)/60)-2 (outCue(end)/60)+2])
     ylim([0 ceil(max(real(VTi_rest)))])
@@ -69,8 +69,8 @@ for f = 10:16
 end
 
 % save all VT/timing/quality data
-writetable(array2table(real(alltab)), 'all_VTesti.txt')
-fixNaN % fix NaNs in .txt
+writetable(array2table(real(alltab)), 'all_VT_rest.txt')
+fixNaN('all_VT_rest.txt') % fix NaNs in .txt
 
 print([cd '\AnalysisFigures\PlotAllVTrest_7.png'],'-dpng')
 

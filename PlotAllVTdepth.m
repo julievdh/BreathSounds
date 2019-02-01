@@ -133,7 +133,7 @@ end
 
 % save all VT/timing/quality data
 writetable(array2table(real(alltab)), 'all_VTesti.txt')
-fixNaN % fix NaNs in .txt
+fixNaN('all_VTesti.txt') % fix NaNs in .txt
 
 return
 
