@@ -2,7 +2,8 @@ clear, close all
 
 addpath('\\uni.au.dk\Users\au575532\Documents\MATLAB\RespDetector')
 load('SarasotaFiles');
-letters = {'A','B','C','D','E','F','G'};
+letters = {'B','C','D','E','F','G','H'};
+IDs = {'FB196','FB268','FB142','FB276','FB133','FB245','FB164'}; 
 
 alltab = nan(1,6);
 
@@ -35,12 +36,11 @@ for f = 10:16
     
     % plot data
     figure(99)
-    subplot(4,2,f-9), hold on
+    subplot(4,2,f-8), hold on
     plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
     % tabulate cue, quality, VTest
     alltab = vertcat(alltab,[repmat(f,length(pon),1) breath.cue(pon) VTesti(1,~isnan(CUE_R))' expdur(pon) insdur(pon) repmat(1,length(pon),1)]); % Quality 1 is now pneum on
-    
     
     % add release time
     [CAL,DEPLOY] = d3loadcal(tag);
@@ -89,13 +89,12 @@ for f = 10:16
     ii = find(outCue > release);
     outQuality(ii) = 20;
     ii = find(outCue <= release);
-    outQuality(ii) = 0;
+    outQuality(ii) = 0; % after release, all Quality become 20
     
     % tabulate after fixing quality rest-swim
     alltab = vertcat(alltab,[repmat(f,length(outCue),1) outCue outVT(:) outeDur(:) outiDur(:) outQuality]);
     
-    
-    plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'o-')
+    plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'.-')
     % add TLCest
     TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
     
@@ -110,15 +109,15 @@ for f = 10:16
     % add text in top corners:
     axletter(gca,letters{f-9},12,0.02)
     % animal ID
-    axletter(gca,regexprep(Sarasota{f,1},'_','-'),8,0.9,0.12)
+    axletter(gca,regexprep(IDs{f-9},'_','-'),8,0.9,0.12)
     % weight
-    axletter(gca,[num2str(Sarasota{f,3}) '  Kg'],8,0.9,0.05)
+    axletter(gca,[num2str(Sarasota{f,3}) ' kg'],8,0.9,0.05)
     
     
     if ismember(f,15:16)
         xlabel('Time (min)')
     end
-    if ismember(f,10:2:16)
+    if ismember(f,11:2:15)
         ylabel('Depth (m)     Volume (L)')
     end
     
@@ -127,9 +126,9 @@ for f = 10:16
     
 end
 
-% print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
-
-% plotMbVT
+% add zoom for panel A
+figure(99)
+print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
 
 % save all VT/timing/quality data
 writetable(array2table(real(alltab)), 'all_VTesti.txt')
