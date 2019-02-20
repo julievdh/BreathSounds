@@ -5,7 +5,7 @@ load('SarasotaFiles');
 letters = {'A','B','C','D','E','F','G'};
 
 alltab = nan(1,6);
-
+allmeas = nan(1,2);
 for f = 10:16
     q = []; % clear q
     % make filename
@@ -60,7 +60,9 @@ for f = 10:16
     ii = find(iswithin(outCue,[breath.cue(pon(1))-5*60 breath.cue(pon(end))+5*60]));
     plot(outCue(ii)/60,outVT(ii),'k*')
     
+    % filename, cue, VTest, Pneum on-off, exp dur, ins dur
     alltab = vertcat(alltab,[repmat(f,length(ii),1) outCue(ii) outVT(ii) outOrigin(ii) outeDur(ii) outiDur(ii)]);
+    allmeas = vertcat(allmeas,[repmat(f,length(VTi),1) VTi(:)]);
     
     xlim([floor(breath.cue(1)/60)-2 (outCue(end)/60)+2])
     ylim([0 ceil(max(real(VTi_rest)))])
@@ -71,11 +73,14 @@ end
 % save all VT/timing/quality data
 writetable(array2table(real(alltab)), 'all_VT_rest.txt')
 fixNaN('all_VT_rest.txt') % fix NaNs in .txt
+writetable(array2table(real(allmeas)), 'all_VT_meas.txt')
+fixNaN('all_VT_meas.txt') % fix NaNs in .txt
 
 % print([cd '\AnalysisFigures\PlotAllVTrest_7.png'],'-dpng')
 
 %%
-figure(2)
+figure(4)
+subplot(1,3,1), hold on
 scatter3((1+alltab(:,4)) - alltab(:,1).*rand(length(alltab),1)./100, alltab(:,6), alltab(:,3), 25, alltab(:,1)*[rand rand rand]/20,'filled')
 set(gca,'xtick',1:2,'xticklabel',{'Pneumotach Off','Pneumotach On'})
 zlabel('Tidal Volume (L)')
