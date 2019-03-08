@@ -5,13 +5,17 @@ load('SarasotaFiles');
 letters = {'B','C','D','E','F','G','H'};
 IDs = {'FB196','FB268','FB142','FB276','FB133','FB245','FB164'}; 
 
-alltab = nan(1,6);
+alltab = nan(1,6); % preallocate
+% subplot settings and positions 
+ha = tight_subplot(4,2,[.06 .03],[.1 .05],[.05 .05]);
+pos = [ha.Position];
+pos = reshape(pos,4,8); 
 
 for f = 10:16
     q = []; % clear q
     % make filename
     tag = Sarasota{f,1};
-    recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
+    % recdir = strcat(gettagpath('AUDIO'),'/',tag(1:4),'/',tag);
     filename = strcat(Sarasota{f,2},'_resp');
     load([cd '\PneumoData\' filename])
     load([cd '\PneumoData\' filename '_flowsound.mat'])
@@ -36,8 +40,9 @@ for f = 10:16
     
     % plot data
     figure(99)
-    subplot(4,2,f-8), hold on
-    plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
+    subplot('position',pos(:,f-8)), hold on
+    plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'.-','color',[0.9290    0.6940    0.1250]) % plot first so behind everything else
+    plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v','color',[0    0.4470    0.7410])    
     plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
     % tabulate cue, quality, VTest
     alltab = vertcat(alltab,[repmat(f,length(pon),1) breath.cue(pon) VTesti(1,~isnan(CUE_R))' expdur(pon) insdur(pon) repmat(1,length(pon),1)]); % Quality 1 is now pneum on
@@ -67,7 +72,7 @@ for f = 10:16
     q0 = find(Quality == 0);
     lia = ismember(q0,pon);
     q = q0(lia == 0);
-    plot(breath.cue(q,1)/60,VTi_rest,'v')
+    plot(breath.cue(q,1)/60,VTi_rest,'v','color',[0.8500    0.3250    0.0980])
     % find quality > after release time
     ii = find(breath.cue(q,1) > release);
     if ~isempty(ii)
@@ -94,7 +99,6 @@ for f = 10:16
     % tabulate after fixing quality rest-swim
     alltab = vertcat(alltab,[repmat(f,length(outCue),1) outCue outVT(:) outeDur(:) outiDur(:) outQuality]);
     
-    plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'.-')
     % add TLCest
     TLC = 0.135*Sarasota{f,3}^0.92; % estimate from Kooyman 1973
     
@@ -107,19 +111,44 @@ for f = 10:16
     grid on
     
     % add text in top corners:
-    axletter(gca,letters{f-9},12,0.02)
+    axletter(gca,letters{f-9},9,0.02)
     % animal ID
-    axletter(gca,regexprep(IDs{f-9},'_','-'),8,0.9,0.12)
+    axletter(gca,regexprep(IDs{f-9},'_','-'),7,0.9,0.12)
     % weight
-    axletter(gca,[num2str(Sarasota{f,3}) ' kg'],8,0.9,0.05)
+    axletter(gca,[num2str(Sarasota{f,3}) ' kg'],7,0.9,0.05)
+    
+    % add subplot 1 zoom panel D
+    if f == 10
+    subplot('position',pos(:,1)), hold on  
+    plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'.-','color',[0.9290    0.6940    0.1250])
+    plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')    
+    plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
+    plot(breath.cue(2:end,1)/60,60./diff(breath.cue(:,1)),'.-')
+    plot(breath.cue(q,1)/60,VTi_rest,'v')
+    q = find(Quality == 20);
+     plot(breath.cue(q(NA),1)/60,repmat(nanmean(VTi_swim),length(NA),1),'kv','markerfacecolor',[0.25 0.25 0.25])
+    plot(breath.cue(q)/60,VTi_swim,'kv') 
+    plot((1:length(p))/fs/60,-p,'k')
+    xlim([340 390])
+    ylim([-10 ceil(max(VTi_swim))])
+    grid on
+    % add text in top corners:
+    axletter(gca,'A',9,0.02)
+    % animal ID
+    axletter(gca,regexprep(IDs{f-9},'_','-'),7,0.9,0.12)
+    % weight
+    axletter(gca,[num2str(Sarasota{f,3}) ' kg'],7,0.9,0.05)
+    
+    end
     
     
     if ismember(f,15:16)
-        xlabel('Time (min)')
+        xlabel('Time (min)','FontSize',9)
     end
     if ismember(f,11:2:15)
-        ylabel('Depth (m)     Volume (L)')
+        ylabel('Depth (m)     Volume (L)','FontSize',9)
     end
+    set(gca,'FontSize',9)
     
     plotMassVT
     VTcontourRR
@@ -128,6 +157,7 @@ end
 
 % add zoom for panel A
 figure(99)
+set(gcf,'Units','inches','position',[0 0 7.3 5])
 print([cd '\AnalysisFigures\PlotAllVTdepth_7.png'],'-dpng')
 
 % save all VT/timing/quality data
