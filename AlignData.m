@@ -9,7 +9,7 @@ close all;
 if exist('f','var'),
     keep f
 else 
-f = 10;
+f = 4;
 end
 
 % Load DQ File Data Structure

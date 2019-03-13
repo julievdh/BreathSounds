@@ -103,7 +103,7 @@ plot(breath.cue(pon)/60,VTi(~isnan(CUE_R)),'k.','markersize',10)
 xlim([breath.cue(pon(1))/60-1 breath.cue(pon(end))/60+1])
 %plot(breath.cue(pon)/60,VTest(1,~isnan(CUE_R)),'^')
 %plot(breath.cue(pon)/60,VTest(2,~isnan(CUE_R)),'^')
-plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v')
+plot(breath.cue(pon)/60,VTesti(1,~isnan(CUE_R)),'v','color',[230 159 0]/255)
 %plot(breath.cue(pon)/60,VTesti(2,~isnan(CUE_R)),'v')
 xlabel('Time (min)'), ylabel('Tidal Volume (L)')
 

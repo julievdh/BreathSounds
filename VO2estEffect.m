@@ -60,9 +60,8 @@ xlabel('Time (min)'), ylabel('Tidal Volume (L)')
 
 %% 
 figure(30), clf, hold on
-VTe(find(isnan(VTe))) = nanmean([VTe,VTi]);
+%VTe(find(isnan(VTe))) = nanmean([VTe,VTi]);
 VTi(find(isnan(VTi))) = nanmean([VTe,VTi]); 
-plot(breath.cue(pon),cumsum(VTe(~isnan(CUE_R))),'k.-')
 plot(breath.cue(pon),cumsum(VTi(~isnan(CUE_R))),'k.-')
 
 % plot(breath.cue(pon),cumsum(VTs(pnum,2)),'.-','color',[0    0.4470
@@ -106,7 +105,7 @@ iRR = 60./diff(breath.cue(pon,1)); % instantaneous respiratory rate,
 rVTe = real(VTe(~isnan(CUE_R)))'; 
 rVTi = real(VTi(~isnan(CUE_R)))';
 rVTest = real(VTest(~isnan(CUE_R)))';
-rVTesti = real(VTest(~isnan(CUE_R)))';
+rVTesti = real(VTesti(~isnan(CUE_R)))';
 iVe_me = iRR.*rVTe(2:end); % instantaneous VE measured exhale
 iVe_mi = iRR.*rVTi(2:end); % instantaneous VE measured inhale
 iVe_ee = iRR.*rVTest(2:end); % instantaneous VE estimated exhale

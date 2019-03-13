@@ -1,7 +1,7 @@
 % Align Data, get pneumo data
 AlignData_DQ2017, warning off
 % load PQ audit
-load(strcat('C:/tag/tagdata/',tag,'_PQ'))
+load(strcat('C:\Users\au575532\Dropbox (Personal)\tag\tagdata\',tag,'_PQ'))
 CUE_S = find(CUE); CUE_R = CUE(find(CUE));
 [~,breath] = findaudit(R,'breath');
 if exist([cd '\PneumoData\' filename '_flowsound.mat'],'file') == 2
